@@ -1,6 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
-import { BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -8,23 +7,20 @@ import { environment } from '../../environments/environment';
 })
 export class Supabase {
   private supabase: SupabaseClient;
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
-  public currentUser$ = this.currentUserSubject.asObservable();
+  private _currentUser = signal<User | null>(null);
+  public currentUser = this._currentUser.asReadonly();
 
   constructor() {
-    this.supabase = createClient(
-      environment.supabase.url,
-      environment.supabase.anonKey
-    )
+    this.supabase = createClient(environment.supabase.url, environment.supabase.anonKey);
 
     // Get initial session
     this.supabase.auth.getSession().then(({ data }) => {
-      this.currentUserSubject.next(data.session?.user ?? null);
+      this._currentUser.set(data.session?.user ?? null);
     });
 
     // Listen for authentication changes
     this.supabase.auth.onAuthStateChange((event, session) => {
-      this.currentUserSubject.next(session?.user ?? null);
+      this._currentUser.set(session?.user ?? null);
     });
   }
 
@@ -33,16 +29,11 @@ export class Supabase {
     return this.supabase;
   }
 
-  // Actual user
-  get currentUser(): User | null {
-    return this.currentUserSubject.value;
-  }
-
   // Sign
   async signIn(email: string, password: string) {
     const { data, error } = await this.supabase.auth.signInWithPassword({
       email,
-      password
+      password,
     });
 
     if (error) throw error;
@@ -53,8 +44,8 @@ export class Supabase {
   async signUp(email: string, password: string) {
     const { data, error } = await this.supabase.auth.signUp({
       email,
-      password
-    })
+      password,
+    });
 
     if (error) throw error;
     return data;
@@ -67,7 +58,7 @@ export class Supabase {
   }
 
   // Recover password
-   async resetPassword(email: string) {
+  async resetPassword(email: string) {
     const { error } = await this.supabase.auth.resetPasswordForEmail(email);
     if (error) throw error;
   }
