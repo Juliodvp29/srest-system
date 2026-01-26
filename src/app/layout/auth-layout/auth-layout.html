@@ -1,0 +1,30 @@
+<div class="flex h-screen w-full overflow-hidden bg-cream dark:bg-background-dark">
+  <!-- Image Side (Hidden on mobile/tablet) -->
+  <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+    <div class="absolute inset-0 bg-black/20 z-10"></div>
+    <div
+      class="w-full h-full bg-center bg-no-repeat bg-cover"
+      style="
+        background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDp51ZUqqbLsTGIdAOWGvhst64bW23QZgjJtMa0aHszrao4vfLSY-FKjHpZUfxkdv68aCLnU4jp-kx5rD1M_6ON96yWwPSTcvulbw871qVuuVv-rnjoAfyd8ART4q8-YDcZ5UAD340ENSCQWwh99RJ0_6VV9X0TKY9S7HvgAGJSYq-64YZIrAcwi7WK3LtEnzFqP9Z0rFPyfj3ZEtjVaQxmruzkLDtm5Wc9qwtq3CbyXcHVEERp6bRSMCUrZvm-yRIljR_zhK0xqi0');
+      "
+    ></div>
+    <div class="absolute bottom-12 left-12 z-20 text-white">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="material-symbols-outlined text-primary text-4xl">restaurant</span>
+        <h1 class="text-3xl font-bold tracking-tight">Restaurante System</h1>
+      </div>
+      <p class="text-lg font-light max-w-md">
+        La plataforma definitiva para la gestión de tu talento culinario y operaciones diarias.
+      </p>
+    </div>
+  </div>
+
+  <!-- Content Side -->
+  <div
+    class="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16 lg:px-24 xl:px-32 bg-background-light dark:bg-background-dark overflow-y-auto"
+  >
+    <div class="max-w-md w-full mx-auto py-12">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

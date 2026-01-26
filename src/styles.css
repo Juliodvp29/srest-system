@@ -1,3 +1,34 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'tailwindcss';
 
-@import "tailwindcss";
+@theme {
+  --color-primary: #52c17b; /* Softer, more elegant green */
+  --color-background-light: #f8faf9;
+  --color-background-dark: #0a120e; /* Deeper, less saturated green-black */
+  --color-sage: #7da48d; /* Muted, softer sage */
+  --color-cream: #fdfdfb;
+
+  --font-display: 'Work Sans', ui-sans-serif, system-ui, sans-serif;
+
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+
+  --color-slate-900: #0e1b12;
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+}
+
+body {
+  font-family: 'Work Sans', sans-serif;
+  @apply antialiased text-slate-900;
+}

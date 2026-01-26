@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Loading } from '@app/services/loading';
+import { Loading } from '@app/core/services/loading';
 
 @Component({
   selector: 'app-loader',
