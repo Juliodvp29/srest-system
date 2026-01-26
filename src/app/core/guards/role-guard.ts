@@ -10,11 +10,13 @@ export const roleGuard: CanActivateFn = async (route, state) => {
 
   // 1. Check if user exists
   if (!user) {
-    return router.createUrlTree(['/login']);
+    return router.createUrlTree(['/auth/login']);
   }
 
   // 2. Get allowed roles defined in the route
   const allowedRoles = route.data['roles'] as string[];
+
+  console.log('Allowed roles:', allowedRoles);
 
   if (!allowedRoles || allowedRoles.length === 0) {
     return true;
@@ -28,7 +30,20 @@ export const roleGuard: CanActivateFn = async (route, state) => {
       .eq('user_id', user.id)
       .single();
 
-    if (error || !data) throw error;
+    if (error) {
+      if (error.code === 'PGRST116') {
+        console.error('Error: No se encontró el registro del empleado.');
+      } else {
+        console.error('Error verificando rol:', error);
+      }
+      return router.createUrlTree(['/unauthorized'], {
+        queryParams: { reason: 'profile-not-found' },
+      });
+    }
+
+    if (!data) {
+      return router.createUrlTree(['/unauthorized'], { queryParams: { reason: 'no-data' } });
+    }
 
     // 4. Validate if the user is active
     if (!data.is_active) {
@@ -41,12 +56,13 @@ export const roleGuard: CanActivateFn = async (route, state) => {
     if (allowedRoles.includes(data.role)) {
       return true;
     } else {
+      console.warn(`Acceso denegado. Rol actual: ${data.role}. Roles permitidos: ${allowedRoles}`);
       return router.createUrlTree(['/unauthorized'], {
         queryParams: { reason: 'insufficient-permissions' },
       });
     }
   } catch (error) {
-    console.error('Error verificando rol:', error);
-    return router.createUrlTree(['/login']);
+    console.error('Error crítico en RoleGuard:', error);
+    return router.createUrlTree(['/auth/login']);
   }
 };
