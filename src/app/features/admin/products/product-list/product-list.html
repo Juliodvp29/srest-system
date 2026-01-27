@@ -8,5 +8,19 @@
     searchPlaceholder="Buscar productos por nombre, categoría..."
     [showAddButton]="true"
     addButtonLabel="Nuevo Producto"
+    (onAdd)="openCreateModal()"
   />
+
+  <!-- Dynamic Modal for Product Form -->
+  <app-modal
+    [isOpen]="isModalOpen()"
+    [title]="selectedProduct() ? 'Editar Producto' : 'Nuevo Producto'"
+    (onClose)="closeModal()"
+  >
+    <app-product-form
+      [initialData]="selectedProduct()"
+      (onSaved)="onProductSaved()"
+      (onCancel)="closeModal()"
+    />
+  </app-modal>
 </div>

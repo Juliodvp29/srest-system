@@ -11,14 +11,45 @@ export class Products {
 
   constructor() {}
 
-  // Get all products
-  getAllProducts(): Observable<Product[]> {
+  // Get all products with category name
+  getAllProducts(): Observable<any[]> {
     return from(
-      this.supabase.client.from('products').select('*').eq('is_active', true).order('name'),
+      this.supabase.client
+        .from('products')
+        .select(
+          `
+          *,
+          categories (
+             name
+          )
+        `,
+        )
+        .eq('is_active', true)
+        .order('name'),
     ).pipe(
       map(({ data, error }) => {
         if (error) throw error;
-        return data as Product[];
+        return data;
+      }),
+    );
+  }
+
+  // Get paged products (for future large datasets)
+  getProductsPaged(page: number, size: number): Observable<{ data: any[]; count: number }> {
+    const fromIndex = page * size;
+    const toIndex = fromIndex + size - 1;
+
+    return from(
+      this.supabase.client
+        .from('products')
+        .select('*, categories(name)', { count: 'exact' })
+        .eq('is_active', true)
+        .order('name')
+        .range(fromIndex, toIndex),
+    ).pipe(
+      map(({ data, error, count }) => {
+        if (error) throw error;
+        return { data: data || [], count: count || 0 };
       }),
     );
   }

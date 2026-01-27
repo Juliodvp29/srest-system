@@ -1,0 +1,25 @@
+:host {
+  display: block;
+}
+
+.backdrop {
+  z-index: 1000;
+}
+
+.modal-card {
+  max-width: 90vw;
+  @apply shadow-primary/5;
+}
+
+/* Scrollbar for modal content */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 5px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  @apply bg-slate-200 dark:bg-white/10 rounded-full hover:bg-primary/30;
+}
