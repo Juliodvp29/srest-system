@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Supabase } from './supabase';
 
-interface Employee {
+export interface Employee {
   id: string;
   user_id?: string;
   branch_id: string;
@@ -18,16 +18,15 @@ interface Employee {
 })
 export class Employees {
   private supabase = inject(Supabase);
-  constructor() { }
+  constructor() {}
 
   // Get all employees
   async getAllEmployees(branchId: string): Promise<Employee[]> {
-    const { data, error } = await
-      this.supabase.client
-        .from('employees')
-        .select('*')
-        .eq('branch_id', branchId)
-        .order('full_name');
+    const { data, error } = await this.supabase.client
+      .from('employees')
+      .select('*')
+      .eq('branch_id', branchId)
+      .order('full_name');
     if (error) throw error;
     return data as Employee[];
   }
@@ -112,10 +111,7 @@ export class Employees {
 
   // Delete employee
   async deleteEmployee(id: string): Promise<void> {
-    const { error } = await this.supabase.client
-      .from('employees')
-      .delete()
-      .eq('id', id);
+    const { error } = await this.supabase.client.from('employees').delete().eq('id', id);
     if (error) throw error;
   }
 }

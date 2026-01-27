@@ -1,1 +1,11 @@
-<p>employees-list works!</p>
+<app-dynamic-table
+  [data]="employees()"
+  [columns]="columns"
+  [actions]="actions"
+  [filters]="filters"
+  title="Gestión de Empleados"
+  description="Administra los accesos y roles de tu equipo de trabajo."
+  [showAddButton]="true"
+  addButtonLabel="Nuevo Empleado"
+  (onAdd)="onAdd.emit()"
+></app-dynamic-table>

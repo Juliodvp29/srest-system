@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '@env/environment';
 import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
@@ -12,8 +12,10 @@ export class Supabase {
   public initialized: Promise<void>;
   private _currentUser = signal<User | null>(null);
   public currentUser = this._currentUser.asReadonly();
-  private _userRole = signal<string | null>(null);
-  public userRole = this._userRole.asReadonly();
+  private _userProfile = signal<{ name: string; role: string; branch_id: string } | null>(null);
+  public userProfile = this._userProfile.asReadonly();
+
+  public userRole = computed(() => this._userProfile()?.role ?? null);
 
   private fetchingRole = false;
 
@@ -28,7 +30,7 @@ export class Supabase {
         this._currentUser.set(user);
         if (user) {
           // Run in next tick to avoid blocking the auth promise resolution
-          setTimeout(() => this.fetchUserRole(user.id), 0);
+          setTimeout(() => this.fetchUserProfile(user.id), 0);
         }
       })
       .catch((err) => {
@@ -42,9 +44,9 @@ export class Supabase {
 
       if (user) {
         // Use timeout to decouple from the auth event cycle
-        setTimeout(() => this.fetchUserRole(user.id), 0);
+        setTimeout(() => this.fetchUserProfile(user.id), 0);
       } else {
-        this._userRole.set(null);
+        this._userProfile.set(null);
       }
 
       if (event === 'PASSWORD_RECOVERY') {
@@ -102,26 +104,30 @@ export class Supabase {
     if (error) throw error;
   }
 
-  // Fetch user role from employees table
-  private async fetchUserRole(userId: string) {
+  // Fetch user profile from employees table
+  private async fetchUserProfile(userId: string) {
     if (this.fetchingRole) return;
     this.fetchingRole = true;
 
     try {
       const { data, error } = await this.supabase
         .from('employees')
-        .select('role')
+        .select('full_name, role, branch_id')
         .eq('user_id', userId)
         .single();
 
       if (error) {
-        this._userRole.set(null);
+        this._userProfile.set(null);
         return;
       }
 
-      this._userRole.set(data?.role ?? null);
+      this._userProfile.set({
+        name: data?.full_name ?? 'Usuario',
+        role: data?.role ?? 'auth-user',
+        branch_id: data?.branch_id ?? '',
+      });
     } catch (err) {
-      this._userRole.set(null);
+      this._userProfile.set(null);
     } finally {
       this.fetchingRole = false;
     }

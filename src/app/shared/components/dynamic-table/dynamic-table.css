@@ -1,26 +1,30 @@
-/* Standardize scrollbar for the table area */
+/* Standardize scrollbar for the table area using the global utility */
+.overflow-x-auto {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-slate-200) transparent;
+}
+
+/* Row transitions */
+tr {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* Scrollbar specific for webkit if needed beyond the global class */
 .overflow-x-auto::-webkit-scrollbar {
   height: 6px;
 }
 
 .overflow-x-auto::-webkit-scrollbar-track {
-  @apply bg-slate-50 dark:bg-white/[0.02];
+  background-color: transparent;
 }
 
 .overflow-x-auto::-webkit-scrollbar-thumb {
-  @apply bg-slate-200 dark:bg-white/10 rounded-full hover:bg-primary/30 transition-colors;
+  background-color: color-mix(in srgb, var(--color-slate-200), transparent 50%);
+  border-radius: 9999px;
 }
 
-/* Row animations */
-tr {
-  @apply transition-all duration-200;
-}
-
-/* Badge state variations */
-.badge-active {
-  @apply bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400 font-bold px-3 py-1 rounded-lg text-[10px] uppercase tracking-wider;
-}
-
-.badge-inactive {
-  @apply bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400 font-bold px-3 py-1 rounded-lg text-[10px] uppercase tracking-wider;
+.dark .overflow-x-auto::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.1);
 }

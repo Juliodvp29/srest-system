@@ -1,13 +1,15 @@
 import { inject, Injectable } from '@angular/core';
 import { Category, Product } from '@core/models/database.types';
 import { Supabase } from '@services/supabase';
-import { from, map, Observable } from 'rxjs';
+import { from, map, Observable, tap } from 'rxjs';
+import { Storages } from './storages';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Products {
   private supabase = inject(Supabase);
+  private storages = inject(Storages);
 
   constructor() {}
 
@@ -44,7 +46,7 @@ export class Products {
         .from('products')
         .select('*, categories(name)', { count: 'exact' })
         .eq('is_active', true)
-        .order('name')
+        .order('created_at', { ascending: false })
         .range(fromIndex, toIndex),
     ).pipe(
       map(({ data, error, count }) => {
@@ -108,6 +110,7 @@ export class Products {
     return from(
       this.supabase.client.from('products').update({ is_active: false }).eq('id', id),
     ).pipe(
+      tap(() => this.storages.deleteEntityImages('product', id)),
       map(({ error }) => {
         if (error) throw error;
       }),

@@ -1,0 +1,19 @@
+<div class="space-y-6">
+  <app-employees-list
+    [refreshTrigger]="refreshTrigger()"
+    (onAdd)="openCreateModal()"
+    (onEdit)="openEditModal($event)"
+  ></app-employees-list>
+</div>
+
+<app-modal
+  [isOpen]="isModalOpen()"
+  [title]="selectedEmployee() ? 'Editar Empleado' : 'Nuevo Empleado'"
+  (onClose)="closeModal()"
+>
+  <app-employees-form
+    [initialData]="selectedEmployee()"
+    (onSaved)="onEmployeeSaved()"
+    (onCancel)="closeModal()"
+  ></app-employees-form>
+</app-modal>

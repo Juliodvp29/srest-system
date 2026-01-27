@@ -1,11 +1,14 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { Product } from '@app/core/models/database.types';
+import { AlertService } from '@app/core/services/alert';
 import { Products } from '@app/core/services/products';
+import { switchMap } from 'rxjs';
 import {
   ActionButton,
   ColumnConfig,
   DynamicTable,
+  FilterConfig,
 } from '../../../../shared/components/dynamic-table/dynamic-table';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { ProductForm } from '../product-form/product-form';
@@ -19,13 +22,23 @@ import { ProductForm } from '../product-form/product-form';
 })
 export class ProductList {
   private productService = inject(Products);
+  private alertService = inject(AlertService);
 
   // State for Modal
   isModalOpen = signal(false);
   selectedProduct = signal<Product | null>(null);
 
+  // Refresh Trigger
+  private refreshTrigger = signal<number>(0);
+
   // Raw data from service
-  private productsRaw = toSignal(this.productService.getAllProducts(), { initialValue: [] });
+  private productsRaw = toSignal(
+    toObservable(this.refreshTrigger).pipe(switchMap(() => this.productService.getAllProducts())),
+    { initialValue: [] },
+  );
+
+  // Categories for filter
+  private categoriesRaw = toSignal(this.productService.getAllCategories(), { initialValue: [] });
 
   // Flattened data for the table
   products = computed(() => {
@@ -44,8 +57,8 @@ export class ProductList {
       label: 'Estado',
       type: 'badge',
       badgeColors: {
-        true: 'bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400',
-        false: 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400',
+        true: 'badge-active',
+        false: 'badge-inactive',
       },
     },
   ];
@@ -67,6 +80,24 @@ export class ProductList {
     },
   ];
 
+  productFilters = computed<FilterConfig[]>(() => [
+    {
+      key: 'category_id',
+      label: 'Categoría',
+      type: 'select',
+      options: this.categoriesRaw().map((c) => ({ label: c.name, value: c.id })),
+    },
+    {
+      key: 'is_available',
+      label: 'Disponibilidad',
+      type: 'select',
+      options: [
+        { label: 'Disponible', value: true },
+        { label: 'Agotado', value: false },
+      ],
+    },
+  ]);
+
   openCreateModal() {
     this.selectedProduct.set(null);
     this.isModalOpen.set(true);
@@ -83,19 +114,24 @@ export class ProductList {
 
   onProductSaved() {
     this.closeModal();
-    // In a reactive app using signals/observables connected to the service,
-    // we would ideally trigger a refresh or use a more reactive cache.
-    // For now, let's keep it simple.
-    location.reload(); // Temporary measure until we implement event-based refresh
+    this.refreshTrigger.update((v) => v + 1);
   }
 
   async deleteProduct(product: any) {
     if (confirm(`¿Estás seguro de eliminar ${product.name}?`)) {
       try {
         await this.productService.deleteProduct(product.id).toPromise();
-        location.reload();
-      } catch (err) {
+        this.alertService.success(
+          'Producto eliminado',
+          `El producto "${product.name}" ha sido eliminado.`,
+        );
+        this.refreshTrigger.update((v) => v + 1);
+      } catch (err: any) {
         console.error('Error deleting:', err);
+        this.alertService.error(
+          'Error al eliminar',
+          err.message || 'No se pudo eliminar el producto.',
+        );
       }
     }
   }

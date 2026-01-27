@@ -1,0 +1,35 @@
+import { CommonModule } from '@angular/common';
+import { Component, inject, input } from '@angular/core';
+import { Alert, AlertService } from '@app/core/services/alert';
+
+@Component({
+  selector: 'app-alert',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './alert.html',
+  styleUrl: './alert.css',
+})
+export class AlertComponent {
+  private alertService = inject(AlertService);
+
+  alert = input.required<Alert>();
+
+  close() {
+    this.alertService.removeAlert(this.alert().id);
+  }
+
+  getIcon(): string {
+    switch (this.alert().type) {
+      case 'success':
+        return 'check_circle';
+      case 'error':
+        return 'cancel';
+      case 'warning':
+        return 'warning';
+      case 'info':
+        return 'info';
+      default:
+        return 'notifications';
+    }
+  }
+}

@@ -15,6 +15,7 @@ export class MainLayout {
   isMobileMenuOpen = signal(false);
   currentUser = this.supabase.currentUser;
   userRole = this.supabase.userRole;
+  userProfile = this.supabase.userProfile;
 
   hasRole(allowedRoles: string[]): boolean {
     const role = this.userRole();

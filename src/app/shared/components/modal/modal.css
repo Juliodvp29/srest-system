@@ -8,18 +8,34 @@
 
 .modal-card {
   max-width: 90vw;
-  @apply shadow-primary/5;
+  box-shadow:
+    0 4px 6px -1px var(--color-primary),
+    0 2px 4px -2px var(--color-primary);
+  box-shadow:
+    0 20px 25px -5px color-mix(in srgb, var(--color-primary) 5%, transparent),
+    0 8px 10px -6px color-mix(in srgb, var(--color-primary) 5%, transparent);
 }
 
-/* Scrollbar for modal content */
+/* Scrollbar for modal content - use standard properties where possible */
+.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-slate-200) transparent;
+}
+
+/* Webkit specific scrollbar styling */
 .overflow-y-auto::-webkit-scrollbar {
   width: 5px;
 }
 
 .overflow-y-auto::-webkit-scrollbar-track {
-  @apply bg-transparent;
+  background-color: transparent;
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb {
-  @apply bg-slate-200 dark:bg-white/10 rounded-full hover:bg-primary/30;
+  background-color: color-mix(in srgb, var(--color-slate-200), transparent 50%);
+  border-radius: 9999px;
+}
+
+.dark .overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.1);
 }

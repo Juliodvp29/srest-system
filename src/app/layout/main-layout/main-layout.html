@@ -140,15 +140,17 @@
     <div class="p-6 border-t border-slate-100 dark:border-white/5">
       <div class="flex items-center gap-3 px-2">
         <div
-          class="size-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold"
+          class="size-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold uppercase"
         >
-          {{ currentUser()?.email?.[0] }}
+          {{ userProfile()?.name?.[0] || currentUser()?.email?.[0] }}
         </div>
         <div class="flex-1 overflow-hidden">
           <p class="text-sm font-bold text-slate-900 dark:text-white truncate">
-            {{ currentUser()?.email }}
+            {{ userProfile()?.name || currentUser()?.email }}
           </p>
-          <p class="text-xs text-sage dark:text-sage/50 truncate">Usuario Autenticado</p>
+          <p class="text-xs text-sage dark:text-sage/50 truncate capitalize">
+            {{ userProfile()?.role || 'Usuario Autenticado' }}
+          </p>
         </div>
       </div>
     </div>

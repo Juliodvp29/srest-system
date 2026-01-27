@@ -66,13 +66,25 @@ export class DynamicTable {
     let result = [...this.data()];
 
     // Apply search
-    const search = this.searchTerm().toLowerCase();
+    const search = this.searchTerm().toLowerCase().trim();
     if (search) {
       result = result.filter((row) => {
-        return this.columns().some((col) => {
+        // 1. Check all defined columns
+        const inColumns = this.columns().some((col) => {
           const value = row[col.key];
-          return value?.toString().toLowerCase().includes(search);
+          if (value === null || value === undefined) return false;
+          return value.toString().toLowerCase().includes(search);
         });
+
+        // 2. Check common name fields (even if not in columns key)
+        const commonFields = ['name', 'title', 'description'];
+        const inCommon = commonFields.some((field) => {
+          const value = row[field];
+          if (value === null || value === undefined) return false;
+          return value.toString().toLowerCase().includes(search);
+        });
+
+        return inColumns || inCommon;
       });
     }
 

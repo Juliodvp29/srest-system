@@ -1,1 +1,101 @@
-<p>employees-form works!</p>
+<form [formGroup]="employeeForm" (ngSubmit)="onSubmit()" class="space-y-6">
+  <!-- Full Name -->
+  <div class="space-y-2">
+    <label class="text-xs font-black uppercase tracking-widest text-sage/50">Nombre Completo</label>
+    <div class="relative">
+      <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-sage/40"
+        >badge</span
+      >
+      <input
+        type="text"
+        formControlName="full_name"
+        class="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium"
+        placeholder="Juan Pérez"
+      />
+    </div>
+  </div>
+
+  <!-- Email (only for new) -->
+  <div class="space-y-2" *ngIf="!initialData()">
+    <label class="text-xs font-black uppercase tracking-widest text-sage/50"
+      >Correo Electrónico</label
+    >
+    <div class="relative">
+      <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-sage/40"
+        >mail</span
+      >
+      <input
+        type="email"
+        formControlName="email"
+        class="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium"
+        placeholder="juan@ejemplo.com"
+      />
+    </div>
+  </div>
+
+  <!-- Password (only for new) -->
+  <div class="space-y-2" *ngIf="!initialData()">
+    <label class="text-xs font-black uppercase tracking-widest text-sage/50">Contraseña</label>
+    <div class="relative">
+      <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-sage/40"
+        >lock</span
+      >
+      <input
+        type="password"
+        formControlName="password"
+        class="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium"
+        placeholder="••••••"
+      />
+    </div>
+    <p class="text-[10px] text-sage/60 px-2 italic">
+      Mínimo 6 caracteres para el acceso al sistema.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <!-- Role -->
+    <div class="space-y-2">
+      <label class="text-xs font-black uppercase tracking-widest text-sage/50">Cargo / Rol</label>
+      <select
+        formControlName="role"
+        class="w-full px-4 py-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium"
+      >
+        <option value="admin">Administrador</option>
+        <option value="manager">Gerente</option>
+        <option value="waiter">Mesero</option>
+        <option value="chef">Cocinero</option>
+        <option value="cashier">Cajero</option>
+      </select>
+    </div>
+
+    <!-- Phone -->
+    <div class="space-y-2">
+      <label class="text-xs font-black uppercase tracking-widest text-sage/50">Teléfono</label>
+      <input
+        type="text"
+        formControlName="phone"
+        class="w-full px-4 py-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium"
+        placeholder="300 123 4567"
+      />
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="flex gap-3 pt-4">
+    <button
+      type="button"
+      (click)="onCancel.emit()"
+      class="flex-1 py-4 px-6 border border-slate-200 dark:border-white/10 rounded-2xl font-bold text-slate-600 dark:text-sage hover:bg-slate-50 dark:hover:bg-white/5 transition-all"
+    >
+      Cancelar
+    </button>
+    <button
+      type="submit"
+      [disabled]="isLoading()"
+      class="flex-[2] py-4 px-6 bg-primary text-background-dark rounded-2xl font-bold hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none"
+    >
+      <span *ngIf="!isLoading()">{{ initialData() ? 'Guardar Cambios' : 'Crear Empleado' }}</span>
+      <span *ngIf="isLoading()">Procesando...</span>
+    </button>
+  </div>
+</form>

@@ -69,30 +69,19 @@
     </div>
   </div>
 
-  <!-- Image URL -->
+  <!-- Product Image -->
   <div class="space-y-1.5">
     <label
       class="text-[10px] font-black uppercase tracking-widest text-sage dark:text-sage/40 ml-1"
     >
-      URL de Imagen (Opcional)
+      Imagen del Producto
     </label>
-    <div class="flex gap-4">
-      <div class="flex-1">
-        <input
-          type="text"
-          formControlName="image_url"
-          placeholder="https://..."
-          class="w-full px-4 py-3 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 text-slate-900 dark:text-white transition-all text-xs font-medium"
-        />
-      </div>
-      @if (productForm.value.image_url) {
-        <div
-          class="size-12 rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden bg-slate-100"
-        >
-          <img [src]="productForm.value.image_url" class="w-full h-full object-cover" />
-        </div>
-      }
-    </div>
+    <app-product-image-upload
+      [initialImageUrl]="initialData()?.image_url || null"
+      [productId]="initialData()?.id || null"
+      (imageUploaded)="onImageUploaded($event)"
+      (imageRemoved)="onImageRemoved()"
+    />
   </div>
 
   <!-- Description -->

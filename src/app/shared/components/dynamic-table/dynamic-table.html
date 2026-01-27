@@ -24,56 +24,73 @@
       }
     </div>
 
-    <!-- Search and Quick Filters bar -->
-    <div class="flex flex-col sm:flex-row gap-4">
-      <div class="flex-1 relative group">
-        <span
-          class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-sage/40 group-focus-within:text-primary transition-colors text-[20px]"
-        >
-          search
-        </span>
-        <input
-          type="text"
-          [value]="searchTerm()"
-          (input)="onSearchChange($event)"
-          [placeholder]="searchPlaceholder()"
-          class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 text-slate-900 dark:text-white placeholder:text-sage/30 transition-all font-medium"
-        />
-      </div>
+    <!-- Search bar -->
+    <div class="flex-1 relative group">
+      <span
+        class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-sage/40 group-focus-within:text-primary transition-colors text-[20px]"
+      >
+        search
+      </span>
+      <input
+        type="text"
+        [value]="searchTerm()"
+        (input)="onSearchChange($event)"
+        [placeholder]="searchPlaceholder()"
+        class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 text-slate-900 dark:text-white placeholder:text-sage/30 transition-all font-medium"
+      />
+    </div>
 
-      <!-- Filters Action (If any) -->
-      @if (filters().length > 0) {
-        <div class="flex gap-2 shrink-0">
+    <!-- Premium Filters Bar -->
+    @if (filters().length > 0) {
+      <div
+        class="flex items-center gap-4 flex-wrap pt-4 border-t border-slate-100 dark:border-white/5 mt-2"
+      >
+        <div class="flex items-center gap-2 px-2">
+          <span class="material-symbols-outlined text-slate-400 text-lg">filter_list</span>
+          <span class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400"
+            >Filters:</span
+          >
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap">
           @for (filter of filters(); track filter.key) {
             @if (filter.type === 'select') {
-              <select
-                [value]="activeFilters()[filter.key] || ''"
-                (change)="onFilterChange(filter.key, $event)"
-                class="px-4 py-3 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-semibold text-slate-600 dark:text-sage/80 focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer"
-              >
-                <option value="">{{ filter.label }}</option>
-                @for (option of filter.options; track option.value) {
-                  <option [value]="option.value">{{ option.label }}</option>
-                }
-              </select>
+              <div class="relative group/select">
+                <select
+                  [value]="activeFilters()[filter.key] || ''"
+                  (change)="onFilterChange(filter.key, $event)"
+                  class="pl-4 pr-10 py-2.5 bg-slate-100/50 dark:bg-white/5 hover:bg-slate-200/50 dark:hover:bg-white/10 border-none rounded-lg text-sm font-bold text-slate-600 dark:text-sage/80 focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer transition-all min-w-[120px]"
+                >
+                  <option value="">{{ filter.label }}</option>
+                  @for (option of filter.options; track option.value) {
+                    <option [value]="option.value">{{ option.label }}</option>
+                  }
+                </select>
+                <span
+                  class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[18px] group-hover/select:text-slate-600 transition-colors"
+                >
+                  expand_more
+                </span>
+              </div>
             }
           }
+
           @if (hasActiveFilters()) {
             <button
               (click)="clearFilters()"
-              class="px-4 py-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors font-bold text-sm flex items-center gap-2"
+              class="ml-2 size-10 flex items-center justify-center text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
+              title="Limpiar filtros"
             >
-              <span class="material-symbols-outlined text-[18px]">filter_alt_off</span>
-              Limpiar
+              <span class="material-symbols-outlined text-[20px]">filter_alt_off</span>
             </button>
           }
         </div>
-      }
-    </div>
+      </div>
+    }
   </div>
 
   <!-- Table Body Area -->
-  <div class="flex-1 overflow-x-auto">
+  <div class="flex-1 overflow-x-auto custom-scrollbar">
     <table class="w-full text-left border-collapse">
       <thead
         class="sticky top-0 bg-slate-50/50 dark:bg-white/5 backdrop-blur-md border-y border-slate-200 dark:border-white/5"
@@ -144,7 +161,11 @@
                       class="size-12 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center overflow-hidden shadow-inner group-hover:scale-105 transition-transform duration-300"
                     >
                       @if (row[column.key]) {
-                        <img [src]="row[column.key]" class="w-full h-full object-cover" />
+                        <img
+                          [src]="row[column.key]"
+                          (error)="row[column.key] = null"
+                          class="w-full h-full object-cover"
+                        />
                       } @else {
                         <span class="text-primary font-black text-xs">{{ getInitials(row) }}</span>
                       }
@@ -156,6 +177,10 @@
                 } @else if (column.type === 'currency') {
                   <span class="font-mono text-sm font-bold text-slate-900 dark:text-primary/90">
                     {{ formatCurrency(row[column.key]) }}
+                  </span>
+                } @else if (column.type === 'date') {
+                  <span class="text-sm font-medium text-slate-500 dark:text-sage/60">
+                    {{ formatDate(row[column.key]) }}
                   </span>
                 } @else {
                   <span class="text-sm font-medium text-slate-600 dark:text-sage/80 line-clamp-1">

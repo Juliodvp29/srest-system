@@ -24,7 +24,7 @@ export const ADMIN_ROUTES: Routes = [
     path: 'employees',
     canActivate: [roleGuard],
     data: { roles: ['admin', 'manager'] },
-    loadComponent: () => import('./employees/employees/employees').then((m) => m.Employees),
+    loadComponent: () => import('./employees/employees').then((m) => m.Employees),
   },
   {
     path: 'tables',
