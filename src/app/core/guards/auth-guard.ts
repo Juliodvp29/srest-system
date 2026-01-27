@@ -6,7 +6,16 @@ export const authGuard: CanActivateFn = async (route, state) => {
   const supabaseService = inject(Supabase);
   const router = inject(Router);
 
-  await supabaseService.initialized;
+  // Safety timeout: if init takes > 5s, something is wrong
+  const timeout = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('AuthGuard Timeout')), 5000),
+  );
+
+  try {
+    await Promise.race([supabaseService.initialized, timeout]);
+  } catch (e) {
+    console.warn('AuthGuard initialization timed out, proceeding anyway.');
+  }
 
   const {
     data: { user },

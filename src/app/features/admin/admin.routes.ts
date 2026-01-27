@@ -6,28 +6,25 @@ export const ADMIN_ROUTES: Routes = [
     path: 'products',
     canActivate: [roleGuard],
     data: { roles: ['admin', 'manager'] },
-    loadComponent: () => import('./products/products/products').then((m) => m.Products),
+    loadComponent: () => import('./products/products').then((m) => m.Products),
   },
   {
     path: 'categories',
     canActivate: [roleGuard],
     data: { roles: ['admin', 'manager'] },
-    loadComponent: () =>
-      import('./categories/categories/categories').then((m) => m.Categories),
+    loadComponent: () => import('./categories/categories/categories').then((m) => m.Categories),
   },
   {
     path: 'modifiers',
     canActivate: [roleGuard],
     data: { roles: ['admin', 'manager'] },
-    loadComponent: () =>
-      import('./modifiers/modifiers/modifiers').then((m) => m.Modifiers),
+    loadComponent: () => import('./modifiers/modifiers/modifiers').then((m) => m.Modifiers),
   },
   {
     path: 'employees',
     canActivate: [roleGuard],
     data: { roles: ['admin', 'manager'] },
-    loadComponent: () =>
-      import('./employees/employees/employees').then((m) => m.Employees),
+    loadComponent: () => import('./employees/employees/employees').then((m) => m.Employees),
   },
   {
     path: 'tables',

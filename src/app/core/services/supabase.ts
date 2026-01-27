@@ -15,26 +15,34 @@ export class Supabase {
   private _userRole = signal<string | null>(null);
   public userRole = this._userRole.asReadonly();
 
+  private fetchingRole = false;
+
   constructor() {
     this.supabase = createClient(environment.supabase.url, environment.supabase.anonKey);
 
-    // Initial session check - Resolve as soon as user state is known
-    this.initialized = this.supabase.auth.getSession().then(async ({ data }) => {
-      const user = data.session?.user ?? null;
-      this._currentUser.set(user);
-      if (user) {
-        // Start role fetching in background
-        this.fetchUserRole(user.id);
-      }
-    });
+    // Initial session check - Resolve as soon as possible
+    this.initialized = this.supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        const user = data.session?.user ?? null;
+        this._currentUser.set(user);
+        if (user) {
+          // Run in next tick to avoid blocking the auth promise resolution
+          setTimeout(() => this.fetchUserRole(user.id), 0);
+        }
+      })
+      .catch((err) => {
+        console.error('Supabase getSession error:', err);
+      });
 
     // Listen for authentication changes
-    this.supabase.auth.onAuthStateChange(async (event, session) => {
+    this.supabase.auth.onAuthStateChange((event, session) => {
       const user = session?.user ?? null;
       this._currentUser.set(user);
 
       if (user) {
-        await this.fetchUserRole(user.id);
+        // Use timeout to decouple from the auth event cycle
+        setTimeout(() => this.fetchUserRole(user.id), 0);
       } else {
         this._userRole.set(null);
       }
@@ -96,6 +104,9 @@ export class Supabase {
 
   // Fetch user role from employees table
   private async fetchUserRole(userId: string) {
+    if (this.fetchingRole) return;
+    this.fetchingRole = true;
+
     try {
       const { data, error } = await this.supabase
         .from('employees')
@@ -111,6 +122,8 @@ export class Supabase {
       this._userRole.set(data?.role ?? null);
     } catch (err) {
       this._userRole.set(null);
+    } finally {
+      this.fetchingRole = false;
     }
   }
 }
