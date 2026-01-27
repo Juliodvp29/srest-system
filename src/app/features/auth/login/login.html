@@ -21,7 +21,7 @@
   <h2 class="text-slate-900 dark:text-white/90 text-4xl font-black leading-tight tracking-tight">
     Bienvenido de nuevo
   </h2>
-  <p class="text-sage dark:text-sage/90 text-base font-normal mt-2">
+  <p class="text-slate-600 dark:text-sage/90 text-base font-normal mt-2">
     Ingresa tus credenciales para acceder al sistema
   </p>
 </div>
@@ -57,17 +57,29 @@
         <p class="text-slate-900 dark:text-white/80 text-sm font-semibold leading-normal">
           Contraseña
         </p>
-        <a class="text-sage dark:text-primary/90 text-xs font-medium hover:underline" href="#"
+        <a
+          class="text-primary dark:text-primary/90 text-xs font-semibold hover:underline"
+          routerLink="/auth/forgot-password"
           >¿Olvidaste tu contraseña?</a
         >
       </div>
-      <div class="relative">
+      <div class="relative group">
         <input
           formControlName="password"
-          class="flex w-full rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/40 border border-slate-200 dark:border-white/5 bg-white dark:bg-white/5 h-14 placeholder:text-sage/30 px-4 text-base font-normal transition-all"
+          class="flex w-full rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/40 border border-slate-200 dark:border-white/5 bg-white dark:bg-white/5 h-14 placeholder:text-sage/30 pl-4 pr-12 text-base font-normal transition-all"
           placeholder="••••••••"
-          type="password"
+          [type]="showPassword() ? 'text' : 'password'"
         />
+        <button
+          type="button"
+          (click)="togglePasswordVisibility()"
+          class="absolute right-3 top-1/2 -translate-y-1/2 size-10 flex items-center justify-center text-slate-400 hover:text-primary transition-colors focus:outline-none"
+          [title]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+        >
+          <span class="material-symbols-outlined text-[20px]">
+            {{ showPassword() ? 'visibility_off' : 'visibility' }}
+          </span>
+        </button>
       </div>
       @if (loginForm.controls.password.invalid && loginForm.controls.password.touched) {
         <p class="text-red-400 dark:text-red-400/80 text-xs mt-1 italic">
@@ -89,9 +101,8 @@
   </div>
 </form>
 
-<!-- Footer Links -->
 <div class="mt-10 pt-6 border-t border-solid border-slate-100 dark:border-white/5 text-center">
-  <p class="text-sage dark:text-sage/80 text-sm">
+  <p class="text-slate-600 dark:text-sage/80 text-sm font-medium">
     ¿No tienes una cuenta?
     <a
       class="text-slate-900 dark:text-primary font-bold hover:underline ml-1"

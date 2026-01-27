@@ -6,63 +6,67 @@ export const roleGuard: CanActivateFn = async (route, state) => {
   const supabaseService = inject(Supabase);
   const router = inject(Router);
 
-  const user = supabaseService.currentUser();
+  await supabaseService.initialized;
 
-  // 1. Check if user exists
+  const {
+    data: { user },
+  } = await supabaseService.client.auth.getUser();
+
   if (!user) {
     return router.createUrlTree(['/auth/login']);
   }
 
-  // 2. Get allowed roles defined in the route
+  // 1. Get allowed roles defined in the route
   const allowedRoles = route.data['roles'] as string[];
-
-  console.log('Allowed roles:', allowedRoles);
 
   if (!allowedRoles || allowedRoles.length === 0) {
     return true;
   }
 
   try {
-    // 3. Check profile on Supabase
-    const { data, error } = await supabaseService.client
-      .from('employees')
-      .select('role, is_active')
-      .eq('user_id', user.id)
-      .single();
+    // 2. Efficiently get role from signal or DB
+    let currentRole = supabaseService.userRole();
+    let isActive = true;
 
-    if (error) {
-      if (error.code === 'PGRST116') {
-        console.error('Error: No se encontró el registro del empleado.');
-      } else {
-        console.error('Error verificando rol:', error);
+    if (!currentRole) {
+      const { data, error } = await supabaseService.client
+        .from('employees')
+        .select('role, is_active')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error || !data) {
+        return router.createUrlTree(['/unauthorized'], {
+          queryParams: { reason: 'profile-error' },
+        });
       }
-      return router.createUrlTree(['/unauthorized'], {
-        queryParams: { reason: 'profile-not-found' },
-      });
-    }
-
-    if (!data) {
-      return router.createUrlTree(['/unauthorized'], { queryParams: { reason: 'no-data' } });
-    }
-
-    // 4. Validate if the user is active
-    if (!data.is_active) {
-      return router.createUrlTree(['/unauthorized'], {
-        queryParams: { reason: 'inactive' },
-      });
-    }
-
-    // 5. Validate role hierarchy
-    if (allowedRoles.includes(data.role)) {
-      return true;
+      currentRole = data.role;
+      isActive = data.is_active;
     } else {
-      console.warn(`Acceso denegado. Rol actual: ${data.role}. Roles permitidos: ${allowedRoles}`);
-      return router.createUrlTree(['/unauthorized'], {
-        queryParams: { reason: 'insufficient-permissions' },
-      });
+      // If we have the role in signal, we verify activity status once
+      // (For now assuming active if signal exists, or we could fetch full state)
+      // To be safe, if it's a critical guard, we fetch fresh state:
+      const { data } = await supabaseService.client
+        .from('employees')
+        .select('is_active')
+        .eq('user_id', user.id)
+        .single();
+      isActive = data?.is_active ?? false;
     }
+
+    if (!isActive) {
+      return router.createUrlTree(['/unauthorized'], { queryParams: { reason: 'inactive' } });
+    }
+
+    if (allowedRoles.includes(currentRole!)) {
+      return true;
+    }
+
+    return router.createUrlTree(['/unauthorized'], {
+      queryParams: { reason: 'insufficient-permissions' },
+    });
   } catch (error) {
-    console.error('Error crítico en RoleGuard:', error);
+    console.error('RoleGuard error:', error);
     return router.createUrlTree(['/auth/login']);
   }
 };

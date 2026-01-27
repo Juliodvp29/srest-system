@@ -2,21 +2,16 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { Supabase } from '@app/core/services/supabase';
 
-export const authGuard: CanActivateFn = async (route, state) => {
+export const guestGuard: CanActivateFn = async () => {
   const supabaseService = inject(Supabase);
   const router = inject(Router);
 
   await supabaseService.initialized;
-
-  const {
-    data: { user },
-  } = await supabaseService.client.auth.getUser();
+  const user = supabaseService.currentUser();
 
   if (user) {
-    return true;
-  } else {
-    return router.createUrlTree(['/auth/login'], {
-      queryParams: { returnUrl: state.url },
-    });
+    return router.createUrlTree(['/dashboard']);
   }
+
+  return true;
 };

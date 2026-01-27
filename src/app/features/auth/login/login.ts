@@ -17,6 +17,11 @@ export class Login {
   private route = inject(ActivatedRoute);
 
   isLoading = signal(false);
+  showPassword = signal(false);
+
+  togglePasswordVisibility() {
+    this.showPassword.update((v) => !v);
+  }
 
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -35,13 +40,10 @@ export class Login {
     this.isLoading.set(true);
     try {
       await this.supabase.signIn(data.email, data.password);
-
-      // Get returnUrl from query params or default to dashboard
       const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
       await this.router.navigateByUrl(returnUrl);
     } catch (err: any) {
       console.error('Login error:', err);
-      // alert(err.message || 'Error al iniciar sesión');
     } finally {
       this.isLoading.set(false);
     }

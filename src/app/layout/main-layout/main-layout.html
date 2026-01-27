@@ -1,0 +1,327 @@
+<div class="flex h-screen w-full bg-cream dark:bg-background-dark overflow-hidden">
+  <!-- Sidebar Desktop -->
+  <aside
+    class="hidden lg:flex flex-col w-72 bg-background-light dark:bg-background-dark border-r border-slate-200 dark:border-white/5 transition-all duration-300"
+  >
+    <!-- Logo area -->
+    <div class="p-8 flex items-center gap-3">
+      <span class="material-symbols-outlined text-primary text-3xl">restaurant</span>
+      <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Restaurante</h1>
+    </div>
+
+    <!-- Navigation Area -->
+    <nav class="flex-1 px-4 space-y-2 overflow-y-auto">
+      <p
+        class="px-4 text-[10px] font-bold uppercase tracking-wider text-sage/50 dark:text-sage/30 mb-2"
+      >
+        Principal
+      </p>
+
+      @if (hasRole(['admin', 'manager', 'waiter', 'chef', 'cashier'])) {
+        <a
+          routerLink="/dashboard"
+          routerLinkActive="bg-primary/10 text-primary"
+          [routerLinkActiveOptions]="{ exact: false }"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-sage/80 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group"
+        >
+          <span class="material-symbols-outlined transition-transform group-hover:scale-110"
+            >dashboard</span
+          >
+          <span class="font-medium">Dashboard</span>
+        </a>
+      }
+
+      @if (hasRole(['admin', 'manager', 'waiter', 'cashier'])) {
+        <a
+          routerLink="/pos"
+          routerLinkActive="bg-primary/10 text-primary"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-sage/80 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group"
+        >
+          <span class="material-symbols-outlined transition-transform group-hover:scale-110"
+            >point_of_sale</span
+          >
+          <span class="font-medium">Ventas (POS)</span>
+        </a>
+      }
+
+      @if (hasRole(['admin', 'manager', 'chef'])) {
+        <a
+          routerLink="/kitchen"
+          routerLinkActive="bg-primary/10 text-primary"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-sage/80 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group"
+        >
+          <span class="material-symbols-outlined transition-transform group-hover:scale-110"
+            >skillet</span
+          >
+          <span class="font-medium">Cocina</span>
+        </a>
+      }
+
+      @if (hasRole(['admin', 'manager'])) {
+        <div class="my-6 border-t border-slate-100 dark:border-white/5 mx-4"></div>
+
+        <p
+          class="px-4 text-[10px] font-bold uppercase tracking-wider text-sage/50 dark:text-sage/30 mb-2"
+        >
+          Administración
+        </p>
+
+        <a
+          routerLink="/admin/products"
+          routerLinkActive="bg-primary/10 text-primary"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-sage/80 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group"
+        >
+          <span class="material-symbols-outlined transition-transform group-hover:scale-110"
+            >inventory_2</span
+          >
+          <span class="font-medium">Productos</span>
+        </a>
+
+        <a
+          routerLink="/admin/employees"
+          routerLinkActive="bg-primary/10 text-primary"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-sage/80 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group"
+        >
+          <span class="material-symbols-outlined transition-transform group-hover:scale-110"
+            >badge</span
+          >
+          <span class="font-medium">Empleados</span>
+        </a>
+
+        <a
+          routerLink="/admin/branch-config"
+          routerLinkActive="bg-primary/10 text-primary"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-sage/80 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group"
+        >
+          <span class="material-symbols-outlined transition-transform group-hover:scale-110"
+            >settings</span
+          >
+          <span class="font-medium">Configuración</span>
+        </a>
+
+        <a
+          routerLink="/inventory"
+          routerLinkActive="bg-primary/10 text-primary"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-sage/80 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group"
+        >
+          <span class="material-symbols-outlined transition-transform group-hover:scale-110"
+            >reorder</span
+          >
+          <span class="font-medium">Inventario</span>
+        </a>
+
+        <a
+          routerLink="/reports"
+          routerLinkActive="bg-primary/10 text-primary"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-sage/80 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group"
+        >
+          <span class="material-symbols-outlined transition-transform group-hover:scale-110"
+            >analytics</span
+          >
+          <span class="font-medium">Reportes</span>
+        </a>
+      }
+
+      @if (hasRole(['admin', 'manager', 'cashier'])) {
+        <a
+          routerLink="/invoices"
+          routerLinkActive="bg-primary/10 text-primary"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-sage/80 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group"
+        >
+          <span class="material-symbols-outlined transition-transform group-hover:scale-110"
+            >receipt_long</span
+          >
+          <span class="font-medium">Facturas</span>
+        </a>
+      }
+    </nav>
+
+    <!-- Sidebar Footer (User info) -->
+    <div class="p-6 border-t border-slate-100 dark:border-white/5">
+      <div class="flex items-center gap-3 px-2">
+        <div
+          class="size-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold"
+        >
+          {{ currentUser()?.email?.[0] }}
+        </div>
+        <div class="flex-1 overflow-hidden">
+          <p class="text-sm font-bold text-slate-900 dark:text-white truncate">
+            {{ currentUser()?.email }}
+          </p>
+          <p class="text-xs text-sage dark:text-sage/50 truncate">Usuario Autenticado</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mobile Menu Overlay -->
+  @if (isMobileMenuOpen()) {
+    <div
+      class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 lg:hidden"
+      (click)="toggleMobileMenu()"
+    ></div>
+  }
+
+  <!-- Mobile Sidebar -->
+  <aside
+    class="fixed top-0 bottom-0 left-0 w-72 bg-background-light dark:bg-background-dark z-50 transform transition-transform duration-300 lg:hidden flex flex-col"
+    [class.-translate-x-full]="!isMobileMenuOpen()"
+  >
+    <div class="p-8 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-primary text-3xl">restaurant</span>
+        <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Restaurante</h1>
+      </div>
+      <button
+        (click)="toggleMobileMenu()"
+        class="size-10 flex items-center justify-center text-sage"
+      >
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <!-- Mobile Nav -->
+    <nav class="flex-1 px-4 space-y-1 overflow-y-auto" (click)="toggleMobileMenu()">
+      <!-- Same links as above -->
+      @if (hasRole(['admin', 'manager', 'waiter', 'chef', 'cashier'])) {
+        <a
+          routerLink="/dashboard"
+          routerLinkActive="bg-primary/10 text-primary"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-sage/80"
+        >
+          <span class="material-symbols-outlined">dashboard</span>
+          <span class="font-medium">Dashboard</span>
+        </a>
+      }
+
+      @if (hasRole(['admin', 'manager', 'waiter', 'cashier'])) {
+        <a
+          routerLink="/pos"
+          routerLinkActive="bg-primary/10 text-primary"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600"
+        >
+          <span class="material-symbols-outlined">point_of_sale</span>
+          <span class="font-medium">Ventas (POS)</span>
+        </a>
+      }
+
+      @if (hasRole(['admin', 'manager', 'chef'])) {
+        <a
+          routerLink="/kitchen"
+          routerLinkActive="bg-primary/10 text-primary"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600"
+        >
+          <span class="material-symbols-outlined">skillet</span>
+          <span class="font-medium">Cocina</span>
+        </a>
+      }
+
+      @if (hasRole(['admin', 'manager'])) {
+        <div class="my-4 border-t border-slate-100 dark:border-white/5 mx-4"></div>
+        <a
+          routerLink="/admin/products"
+          routerLinkActive="bg-primary/10 text-primary"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-sage"
+        >
+          <span class="material-symbols-outlined">inventory_2</span>
+          <span class="font-medium">Productos</span>
+        </a>
+        <a
+          routerLink="/admin/employees"
+          routerLinkActive="bg-primary/10 text-primary"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-sage"
+        >
+          <span class="material-symbols-outlined">badge</span>
+          <span class="font-medium">Empleados</span>
+        </a>
+
+        <a
+          routerLink="/inventory"
+          routerLinkActive="bg-primary/10 text-primary"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-sage"
+        >
+          <span class="material-symbols-outlined">reorder</span>
+          <span class="font-medium">Inventario</span>
+        </a>
+
+        <a
+          routerLink="/reports"
+          routerLinkActive="bg-primary/10 text-primary"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-sage"
+        >
+          <span class="material-symbols-outlined">analytics</span>
+          <span class="font-medium">Reportes</span>
+        </a>
+      }
+
+      @if (hasRole(['admin', 'manager', 'cashier'])) {
+        <a
+          routerLink="/invoices"
+          routerLinkActive="bg-primary/10 text-primary"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-sage"
+        >
+          <span class="material-symbols-outlined">receipt_long</span>
+          <span class="font-medium">Facturas</span>
+        </a>
+      }
+    </nav>
+
+    <div class="p-6 border-t border-slate-100 dark:border-white/5">
+      <button
+        (click)="logout()"
+        class="w-full flex items-center justify-center gap-2 py-3 bg-red-50 dark:bg-red-900/10 text-red-500 rounded-xl font-bold"
+      >
+        <span class="material-symbols-outlined">logout</span>
+        Cerrar Sesión
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    <!-- Top Header -->
+    <header
+      class="bg-background-light dark:bg-background-dark border-b border-slate-200 dark:border-white/5 h-20 flex items-center justify-between px-6 sm:px-10 shrink-0"
+    >
+      <div class="flex items-center gap-4">
+        <button
+          (click)="toggleMobileMenu()"
+          class="lg:hidden size-10 flex items-center justify-center text-slate-900 dark:text-white bg-slate-100 dark:bg-white/5 rounded-lg"
+        >
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+        <div class="hidden lg:block">
+          <h2
+            class="text-sm font-semibold text-sage/50 dark:text-sage/30 uppercase tracking-widest"
+          >
+            Panel de Control
+          </h2>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <!-- Optional search or notifications could go here -->
+        <button
+          (click)="logout()"
+          class="hidden sm:flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-white/5 hover:bg-red-50 dark:hover:bg-red-900/10 text-slate-600 dark:text-sage hover:text-red-500 transition-all rounded-lg font-semibold text-sm"
+        >
+          <span class="material-symbols-outlined text-[20px]">logout</span>
+          <span>Cerrar Sesión</span>
+        </button>
+        <button
+          (click)="logout()"
+          class="sm:hidden size-10 flex items-center justify-center text-sage bg-slate-100 dark:bg-white/5 rounded-lg"
+        >
+          <span class="material-symbols-outlined">logout</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- View Content -->
+    <div class="flex-1 overflow-y-auto p-6 sm:p-10">
+      <div class="max-w-7xl mx-auto">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </main>
+</div>
