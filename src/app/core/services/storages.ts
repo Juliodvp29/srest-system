@@ -277,7 +277,7 @@ export class Storages {
     }
   }
 
-  async compressImage(file: File, maxWidth: number = 800, quality: number = 0.8): Promise<File> {
+  async compressImage(file: File, maxWidth: number = 1200, quality: number = 0.85): Promise<File> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
 
@@ -289,22 +289,32 @@ export class Storages {
           let width = img.width;
           let height = img.height;
 
-          if (width > maxWidth) {
-            height = (height * maxWidth) / width;
-            width = maxWidth;
+          if (width > maxWidth || height > maxWidth) {
+            if (width > height) {
+              height = (height * maxWidth) / width;
+              width = maxWidth;
+            } else {
+              width = (width * maxWidth) / height;
+              height = maxWidth;
+            }
           }
 
           canvas.width = width;
           canvas.height = height;
 
           const ctx = canvas.getContext('2d');
-          ctx?.drawImage(img, 0, 0, width, height);
+
+          if (ctx) {
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(img, 0, 0, width, height);
+          }
 
           canvas.toBlob(
             (blob) => {
               if (blob) {
                 const compressedFile = new File([blob], file.name, {
-                  type: 'image/jpeg',
+                  type: 'image/webp',
                   lastModified: Date.now(),
                 });
                 resolve(compressedFile);
@@ -312,7 +322,7 @@ export class Storages {
                 reject(new Error('Error comprimiendo imagen'));
               }
             },
-            'image/jpeg',
+            'image/webp',
             quality,
           );
         };

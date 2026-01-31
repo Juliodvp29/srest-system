@@ -1,4 +1,12 @@
-import { Component, computed, inject, input, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { AlertService } from '@app/core/services/alert';
 import { Supabase } from '@app/core/services/supabase';
@@ -14,6 +22,7 @@ import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-employees-list',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [DynamicTable, ConfirmationModal],
   templateUrl: './employees-list.html',
   styleUrl: './employees-list.css',

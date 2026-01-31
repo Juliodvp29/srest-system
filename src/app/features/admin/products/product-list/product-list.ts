@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { Product } from '@app/core/models/database.types';
 import { AlertService } from '@app/core/services/alert';
@@ -16,6 +16,7 @@ import { ProductForm } from '../product-form/product-form';
 
 @Component({
   selector: 'app-product-list',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [DynamicTable, Modal, ProductForm, ConfirmationModal],
   templateUrl: './product-list.html',
   styleUrl: './product-list.css',

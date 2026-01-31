@@ -15,7 +15,7 @@
   >
     @if (previewUrl()) {
       <!-- Image Preview -->
-      <img [src]="previewUrl()" class="w-full h-full object-cover transition-all" />
+      <img [src]="previewUrl()" class="w-full h-full object-cover transition-all" [alt]="'preview'" />
 
       <!-- Delete Overlay -->
       <div

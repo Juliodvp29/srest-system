@@ -57,6 +57,7 @@
             @if (filter.type === 'select') {
               <div class="relative group/select">
                 <select
+                  [aria-label]="'Seleccione el filtro'"
                   [value]="activeFilters()[filter.key] || ''"
                   (change)="onFilterChange(filter.key, $event)"
                   class="pl-4 pr-10 py-2.5 bg-slate-100/50 dark:bg-white/5 hover:bg-slate-200/50 dark:hover:bg-white/10 border-none rounded-lg text-sm font-bold text-slate-600 dark:text-sage/80 focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer transition-all min-w-[120px]"
@@ -163,8 +164,10 @@
                       @if (row[column.key]) {
                         <img
                           [src]="row[column.key]"
+                          [alt]="row.name || 'Imagen del producto'"
                           (error)="row[column.key] = null"
                           class="w-full h-full object-cover"
+                          loading="lazy"
                         />
                       } @else {
                         <span class="text-primary font-black text-xs">{{ getInitials(row) }}</span>

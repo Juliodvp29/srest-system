@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { InventoryItem } from '@app/core/models/Inventory';
 import { AlertService } from '@app/core/services/alert';
@@ -18,6 +18,7 @@ import { ItemForm } from '../item-form/item-form';
 
 @Component({
   selector: 'app-item-list',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, DynamicTable, Modal, ItemForm, ConfirmationModal],
   templateUrl: './item-list.html',
   styleUrl: './item-list.css',
