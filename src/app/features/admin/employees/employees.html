@@ -3,7 +3,8 @@
     [refreshTrigger]="refreshTrigger()"
     (onAdd)="openCreateModal()"
     (onEdit)="openEditModal($event)"
-  ></app-employees-list>
+    (onDeleted)="refresh()"
+  />
 </div>
 
 <app-modal
@@ -15,5 +16,5 @@
     [initialData]="selectedEmployee()"
     (onSaved)="onEmployeeSaved()"
     (onCancel)="closeModal()"
-  ></app-employees-form>
+  />
 </app-modal>

@@ -4,15 +4,14 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { Inventory as InventoryService } from '@app/core/services/inventory';
 import { Supabase } from '@app/core/services/supabase';
 import {
-    ColumnConfig,
-    DynamicTable,
-    FilterConfig,
+  ColumnConfig,
+  DynamicTable,
+  FilterConfig,
 } from '@app/shared/components/dynamic-table/dynamic-table';
 import { from, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-movements',
-  standalone: true,
   imports: [CommonModule, DynamicTable],
   templateUrl: './movements.html',
   styleUrl: './movements.css',

@@ -3,20 +3,20 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { Product } from '@app/core/models/database.types';
 import { AlertService } from '@app/core/services/alert';
 import { Products } from '@app/core/services/products';
-import { switchMap } from 'rxjs';
+import { ConfirmationModal } from '@shared/components/confirmation-modal/confirmation-modal';
 import {
   ActionButton,
   ColumnConfig,
   DynamicTable,
   FilterConfig,
-} from '../../../../shared/components/dynamic-table/dynamic-table';
-import { Modal } from '../../../../shared/components/modal/modal';
+} from '@shared/components/dynamic-table/dynamic-table';
+import { Modal } from '@shared/components/modal/modal';
+import { switchMap } from 'rxjs';
 import { ProductForm } from '../product-form/product-form';
 
 @Component({
   selector: 'app-product-list',
-  standalone: true,
-  imports: [DynamicTable, Modal, ProductForm],
+  imports: [DynamicTable, Modal, ProductForm, ConfirmationModal],
   templateUrl: './product-list.html',
   styleUrl: './product-list.css',
 })
@@ -27,6 +27,10 @@ export class ProductList {
   // State for Modal
   isModalOpen = signal(false);
   selectedProduct = signal<Product | null>(null);
+
+  // State for Delete Confirmation
+  isDeleteModalOpen = signal(false);
+  productToDelete = signal<any>(null);
 
   // Refresh Trigger
   private refreshTrigger = signal<number>(0);
@@ -74,7 +78,7 @@ export class ProductList {
     {
       label: 'Eliminar',
       icon: 'delete',
-      onClick: (p) => this.deleteProduct(p),
+      onClick: (p) => this.openDeleteModal(p),
       class:
         'size-9 flex items-center justify-center bg-red-50 dark:bg-red-500/10 hover:bg-red-500 hover:text-white text-red-500 transition-all rounded-lg',
     },
@@ -117,22 +121,31 @@ export class ProductList {
     this.refreshTrigger.update((v) => v + 1);
   }
 
-  async deleteProduct(product: any) {
-    if (confirm(`¿Estás seguro de eliminar ${product.name}?`)) {
-      try {
-        await this.productService.deleteProduct(product.id).toPromise();
-        this.alertService.success(
-          'Producto eliminado',
-          `El producto "${product.name}" ha sido eliminado.`,
-        );
-        this.refreshTrigger.update((v) => v + 1);
-      } catch (err: any) {
-        console.error('Error deleting:', err);
-        this.alertService.error(
-          'Error al eliminar',
-          err.message || 'No se pudo eliminar el producto.',
-        );
-      }
+  openDeleteModal(product: any) {
+    this.productToDelete.set(product);
+    this.isDeleteModalOpen.set(true);
+  }
+
+  async confirmDelete() {
+    const product = this.productToDelete();
+    if (!product) return;
+
+    try {
+      await this.productService.deleteProduct(product.id).toPromise();
+      this.alertService.success(
+        'Producto eliminado',
+        `El producto "${product.name}" ha sido eliminado.`,
+      );
+      this.refreshTrigger.update((v) => v + 1);
+    } catch (err: any) {
+      console.error('Error deleting:', err);
+      this.alertService.error(
+        'Error al eliminar',
+        err.message || 'No se pudo eliminar el producto.',
+      );
+    } finally {
+      this.isDeleteModalOpen.set(false);
+      this.productToDelete.set(null);
     }
   }
 }

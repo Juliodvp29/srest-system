@@ -3,7 +3,6 @@ import { Loading } from '@app/core/services/loading';
 
 @Component({
   selector: 'app-loader',
-  standalone: true,
   imports: [],
   templateUrl: './loader.html',
   styleUrl: './loader.css',

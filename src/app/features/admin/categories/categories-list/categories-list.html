@@ -24,4 +24,17 @@
       (onCancel)="closeModal()"
     />
   </app-modal>
+  <!-- Confirmation Modal for Deletion -->
+  <app-confirmation-modal
+    [isOpen]="isDeleteModalOpen()"
+    title="Eliminar Categoría"
+    [message]="
+      '¿Estás seguro de eliminar la categoría ' +
+      categoryToDelete()?.name +
+      '? Esta acción no se puede deshacer.'
+    "
+    confirmLabel="Eliminar Categoría"
+    (onConfirm)="confirmDelete()"
+    (onCancel)="isDeleteModalOpen.set(false)"
+  />
 </div>

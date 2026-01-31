@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-unauthorized',
-  standalone: true,
   imports: [CommonModule],
   templateUrl: './unauthorized.component.html',
   styleUrls: ['./unauthorized.component.css'],
@@ -14,7 +13,7 @@ export class UnauthorizedComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {

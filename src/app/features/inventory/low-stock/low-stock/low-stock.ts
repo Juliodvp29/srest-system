@@ -4,12 +4,11 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { InventoryItem } from '@app/core/models/Inventory';
 import { Inventory as InventoryService } from '@app/core/services/inventory';
 import { Supabase } from '@app/core/services/supabase';
-import { ColumnConfig, DynamicTable } from '@app/shared/components/dynamic-table/dynamic-table';
+import { ColumnConfig, DynamicTable } from '@shared/components/dynamic-table/dynamic-table';
 import { from, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-low-stock',
-  standalone: true,
   imports: [CommonModule, DynamicTable],
   templateUrl: './low-stock.html',
   styleUrl: './low-stock.css',

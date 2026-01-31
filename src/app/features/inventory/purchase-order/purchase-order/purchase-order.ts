@@ -5,12 +5,11 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AlertService } from '@app/core/services/alert';
 import { Inventory as InventoryService } from '@app/core/services/inventory';
 import { Supabase } from '@app/core/services/supabase';
-import { ColumnConfig, DynamicTable } from '@app/shared/components/dynamic-table/dynamic-table';
+import { ColumnConfig, DynamicTable } from '@shared/components/dynamic-table/dynamic-table';
 import { from, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-purchase-order',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, DynamicTable],
   templateUrl: './purchase-order.html',
   styleUrl: './purchase-order.css',

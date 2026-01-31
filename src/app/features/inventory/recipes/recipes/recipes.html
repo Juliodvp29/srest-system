@@ -208,4 +208,18 @@
       </div>
     </form>
   </app-modal>
+
+  <!-- Confirmation Modal for Deletion -->
+  <app-confirmation-modal
+    [isOpen]="isDeleteModalOpen()"
+    title="Remover Ingrediente"
+    [message]="
+      '¿Estás seguro de eliminar ' +
+      ingredientToDelete()?.item_name +
+      ' de la receta? Esta acción no se puede deshacer.'
+    "
+    confirmLabel="Remover Ingrediente"
+    (onConfirm)="confirmDelete()"
+    (onCancel)="isDeleteModalOpen.set(false)"
+  />
 </div>

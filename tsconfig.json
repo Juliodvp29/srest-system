@@ -21,6 +21,7 @@
       "@services/*": ["./src/app/core/services/*"],
       "@interceptors/*": ["./src/app/core/interceptors/*"],
       "@features/*": ["./src/app/features/*"],
+      "@shared/*": ["./src/app/shared/*"],
       "@layout/*": ["./src/app/layout/*"]
     }
   },

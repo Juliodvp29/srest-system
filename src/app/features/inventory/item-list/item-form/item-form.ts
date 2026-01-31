@@ -8,7 +8,6 @@ import { Supabase } from '@app/core/services/supabase';
 
 @Component({
   selector: 'app-item-form',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './item-form.html',
   styleUrl: './item-form.css',

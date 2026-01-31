@@ -8,4 +8,18 @@
   [showAddButton]="true"
   addButtonLabel="Nuevo Empleado"
   (onAdd)="onAdd.emit()"
-></app-dynamic-table>
+/>
+
+<!-- Confirmation Modal for Deletion -->
+<app-confirmation-modal
+  [isOpen]="isDeleteModalOpen()"
+  title="Eliminar Empleado"
+  [message]="
+    '¿Estás seguro de eliminar a ' +
+    employeeToDelete()?.full_name +
+    '? Esta acción no se puede deshacer.'
+  "
+  confirmLabel="Eliminar Empleado"
+  (onConfirm)="confirmDelete()"
+  (onCancel)="isDeleteModalOpen.set(false)"
+/>

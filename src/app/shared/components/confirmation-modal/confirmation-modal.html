@@ -1,0 +1,69 @@
+@if (isOpen()) {
+  <div class="fixed inset-0 z-[60] flex items-center justify-center p-4">
+    <!-- Backdrop -->
+    <div
+      class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300"
+      (click)="handleCancel()"
+    ></div>
+
+    <!-- Modal Content -->
+    <div
+      class="relative w-full max-w-md bg-white dark:bg-background-dark rounded-[32px] shadow-2xl shadow-slate-900/20 border border-slate-200 dark:border-white/10 overflow-hidden transform transition-all animate-in zoom-in-95 duration-200"
+    >
+      <div class="p-8">
+        <!-- Icon & Header -->
+        <div class="flex flex-col items-center text-center space-y-4">
+          <div
+            [ngClass]="{
+              'bg-red-50 dark:bg-red-500/10 text-red-500': type() === 'danger',
+              'bg-amber-50 dark:bg-amber-500/10 text-amber-500': type() === 'warning',
+              'bg-primary/10 text-primary': type() === 'info',
+            }"
+            class="size-20 rounded-[24px] flex items-center justify-center shadow-inner"
+          >
+            <span class="material-symbols-outlined text-[40px]">
+              {{
+                type() === 'danger' ? 'delete_forever' : type() === 'warning' ? 'warning' : 'info'
+              }}
+            </span>
+          </div>
+
+          <div class="space-y-2">
+            <h3
+              class="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none"
+            >
+              {{ title() }}
+            </h3>
+            <p class="text-sm font-medium text-slate-500 dark:text-sage/40 leading-relaxed px-4">
+              {{ message() }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-col sm:flex-row gap-3 mt-8">
+          <button
+            (click)="handleCancel()"
+            class="flex-1 py-4 px-6 border border-slate-200 dark:border-white/10 rounded-2xl font-bold text-slate-600 dark:text-sage hover:bg-slate-50 dark:hover:bg-white/5 transition-all text-sm"
+          >
+            {{ cancelLabel() }}
+          </button>
+          <button
+            (click)="handleConfirm()"
+            [ngClass]="{
+              'bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20':
+                type() === 'danger',
+              'bg-amber-500 hover:bg-amber-600 text-white shadow-lg shadow-amber-500/20':
+                type() === 'warning',
+              'bg-primary hover:bg-primary/90 text-background-dark shadow-lg shadow-primary/20':
+                type() === 'info',
+            }"
+            class="flex-1 py-4 px-6 rounded-2xl font-black text-sm transition-all active:scale-[0.98]"
+          >
+            {{ confirmLabel() }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

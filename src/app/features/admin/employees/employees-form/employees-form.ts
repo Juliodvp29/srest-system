@@ -7,7 +7,6 @@ import { Supabase } from '@app/core/services/supabase';
 
 @Component({
   selector: 'app-employees-form',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './employees-form.html',
   styleUrl: './employees-form.css',

@@ -24,4 +24,17 @@
       (onCancel)="closeModal()"
     />
   </app-modal>
+  <!-- Confirmation Modal for Deletion -->
+  <app-confirmation-modal
+    [isOpen]="isDeleteModalOpen()"
+    title="Eliminar Producto"
+    [message]="
+      '¿Estás seguro de eliminar el producto ' +
+      productToDelete()?.name +
+      '? Esta acción no se puede deshacer.'
+    "
+    confirmLabel="Eliminar Producto"
+    (onConfirm)="confirmDelete()"
+    (onCancel)="isDeleteModalOpen.set(false)"
+  />
 </div>

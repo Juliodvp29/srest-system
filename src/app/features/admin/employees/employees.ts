@@ -7,7 +7,6 @@ import { EmployeesList } from './employees-list/employees-list';
 
 @Component({
   selector: 'app-employees',
-  standalone: true,
   imports: [CommonModule, EmployeesList, Modal, EmployeesForm],
   templateUrl: './employees.html',
   styleUrl: './employees.css',
@@ -33,6 +32,10 @@ export class Employees {
 
   onEmployeeSaved() {
     this.closeModal();
+    this.refresh();
+  }
+
+  refresh() {
     this.refreshTrigger.update((v) => v + 1);
   }
 }

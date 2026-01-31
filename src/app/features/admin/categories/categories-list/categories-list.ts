@@ -3,19 +3,19 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { Category } from '@app/core/models/database.types';
 import { AlertService } from '@app/core/services/alert';
 import { Products } from '@app/core/services/products';
-import { switchMap } from 'rxjs';
+import { ConfirmationModal } from '@shared/components/confirmation-modal/confirmation-modal';
 import {
   ActionButton,
   ColumnConfig,
   DynamicTable,
-} from '../../../../shared/components/dynamic-table/dynamic-table';
-import { Modal } from '../../../../shared/components/modal/modal';
+} from '@shared/components/dynamic-table/dynamic-table';
+import { Modal } from '@shared/components/modal/modal';
+import { switchMap } from 'rxjs';
 import { CategoriesForm } from '../categories-form/categories-form';
 
 @Component({
   selector: 'app-categories-list',
-  standalone: true,
-  imports: [DynamicTable, Modal, CategoriesForm],
+  imports: [DynamicTable, Modal, CategoriesForm, ConfirmationModal],
   templateUrl: './categories-list.html',
   styleUrl: './categories-list.css',
 })
@@ -26,6 +26,10 @@ export class CategoriesList {
   // State for Modal
   isModalOpen = signal(false);
   selectedCategory = signal<Category | null>(null);
+
+  // State for Delete Confirmation
+  isDeleteModalOpen = signal(false);
+  categoryToDelete = signal<Category | null>(null);
 
   // Refresh Trigger
   private refreshTrigger = signal<number>(0);
@@ -67,7 +71,7 @@ export class CategoriesList {
     {
       label: 'Eliminar',
       icon: 'delete',
-      onClick: (item) => this.deleteCategory(item),
+      onClick: (item) => this.openDeleteModal(item),
       class:
         'size-9 flex items-center justify-center bg-red-50 dark:bg-red-500/10 hover:bg-red-500 hover:text-white text-red-500 transition-all rounded-lg',
     },
@@ -92,22 +96,31 @@ export class CategoriesList {
     this.refreshTrigger.update((v) => v + 1);
   }
 
-  async deleteCategory(category: Category) {
-    if (confirm(`¿Estás seguro de eliminar la categoría "${category.name}"?`)) {
-      try {
-        await this.productService.deleteCategory(category.id).toPromise();
-        this.alertService.success(
-          'Categoría eliminada',
-          `La categoría "${category.name}" ha sido eliminada.`,
-        );
-        this.refreshTrigger.update((v) => v + 1);
-      } catch (err: any) {
-        console.error('Error deleting category:', err);
-        this.alertService.error(
-          'Error al eliminar',
-          err.message || 'No se pudo eliminar la categoría.',
-        );
-      }
+  openDeleteModal(category: Category) {
+    this.categoryToDelete.set(category);
+    this.isDeleteModalOpen.set(true);
+  }
+
+  async confirmDelete() {
+    const category = this.categoryToDelete();
+    if (!category) return;
+
+    try {
+      await this.productService.deleteCategory(category.id).toPromise();
+      this.alertService.success(
+        'Categoría eliminada',
+        `La categoría "${category.name}" ha sido eliminada.`,
+      );
+      this.refreshTrigger.update((v) => v + 1);
+    } catch (err: any) {
+      console.error('Error deleting category:', err);
+      this.alertService.error(
+        'Error al eliminar',
+        err.message || 'No se pudo eliminar la categoría.',
+      );
+    } finally {
+      this.isDeleteModalOpen.set(false);
+      this.categoryToDelete.set(null);
     }
   }
 }

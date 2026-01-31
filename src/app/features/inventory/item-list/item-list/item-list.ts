@@ -2,32 +2,38 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { InventoryItem } from '@app/core/models/Inventory';
+import { AlertService } from '@app/core/services/alert';
 import { Inventory as InventoryService } from '@app/core/services/inventory';
 import { Supabase } from '@app/core/services/supabase';
+import { ConfirmationModal } from '@shared/components/confirmation-modal/confirmation-modal';
 import {
-    ActionButton,
-    ColumnConfig,
-    DynamicTable,
-    FilterConfig,
-} from '@app/shared/components/dynamic-table/dynamic-table';
-import { Modal } from '@app/shared/components/modal/modal';
+  ActionButton,
+  ColumnConfig,
+  DynamicTable,
+  FilterConfig,
+} from '@shared/components/dynamic-table/dynamic-table';
+import { Modal } from '@shared/components/modal/modal';
 import { switchMap } from 'rxjs';
-import { ItemForm } from '../item-form/item-form'; // I will create this next
+import { ItemForm } from '../item-form/item-form';
 
 @Component({
   selector: 'app-item-list',
-  standalone: true,
-  imports: [CommonModule, DynamicTable, Modal, ItemForm],
+  imports: [CommonModule, DynamicTable, Modal, ItemForm, ConfirmationModal],
   templateUrl: './item-list.html',
   styleUrl: './item-list.css',
 })
 export class ItemList {
   private inventoryService = inject(InventoryService);
   private supabase = inject(Supabase);
+  private alertService = inject(AlertService);
 
-  // State for Modal
+  // Modal State
   isModalOpen = signal(false);
   selectedItem = signal<InventoryItem | null>(null);
+
+  // State for Delete Confirmation
+  isDeleteModalOpen = signal(false);
+  itemToDelete = signal<InventoryItem | null>(null);
 
   // Refresh Trigger
   private refreshTrigger = signal<number>(0);
@@ -89,7 +95,7 @@ export class ItemList {
     {
       label: 'Eliminar',
       icon: 'delete',
-      onClick: (item) => this.deleteItem(item),
+      onClick: (item) => this.openDeleteModal(item),
       class:
         'size-9 flex items-center justify-center bg-red-50 dark:bg-red-500/10 hover:bg-red-500 hover:text-white text-red-500 transition-all rounded-lg',
     },
@@ -129,14 +135,25 @@ export class ItemList {
     this.refreshTrigger.update((v) => v + 1);
   }
 
-  async deleteItem(item: InventoryItem) {
-    if (confirm(`¿Estás seguro de eliminar "${item.name}"?`)) {
-      try {
-        await this.inventoryService.deleteInventoryItem(item.id);
-        this.refreshTrigger.update((v) => v + 1);
-      } catch (err) {
-        console.error('Error deleting inventory item:', err);
-      }
+  openDeleteModal(item: InventoryItem) {
+    this.itemToDelete.set(item);
+    this.isDeleteModalOpen.set(true);
+  }
+
+  async confirmDelete() {
+    const item = this.itemToDelete();
+    if (!item) return;
+
+    try {
+      await this.inventoryService.deleteInventoryItem(item.id);
+      this.alertService.success('Insumo eliminado', `El insumo "${item.name}" ha sido eliminado.`);
+      this.refreshTrigger.update((v) => v + 1);
+    } catch (err: any) {
+      console.error('Error deleting inventory item:', err);
+      this.alertService.error('Error', err.message || 'No se pudo eliminar el insumo.');
+    } finally {
+      this.isDeleteModalOpen.set(false);
+      this.itemToDelete.set(null);
     }
   }
 }

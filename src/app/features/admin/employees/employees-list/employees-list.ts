@@ -1,5 +1,8 @@
-import { Component, computed, inject, input, output } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { AlertService } from '@app/core/services/alert';
+import { Supabase } from '@app/core/services/supabase';
+import { ConfirmationModal } from '@app/shared/components/confirmation-modal/confirmation-modal';
 import {
   ActionButton,
   ColumnConfig,
@@ -7,24 +10,27 @@ import {
   FilterConfig,
 } from '@app/shared/components/dynamic-table/dynamic-table';
 import { Employee, Employees as EmployeesService } from '@services/employees';
-
-import { Supabase } from '@app/core/services/supabase';
 import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-employees-list',
-  standalone: true,
-  imports: [DynamicTable],
+  imports: [DynamicTable, ConfirmationModal],
   templateUrl: './employees-list.html',
   styleUrl: './employees-list.css',
 })
 export class EmployeesList {
   private employeesService = inject(EmployeesService);
   private supabase = inject(Supabase);
+  private alertService = inject(AlertService);
+
+  // Modal State
+  isDeleteModalOpen = signal(false);
+  employeeToDelete = signal<Employee | null>(null);
 
   refreshTrigger = input<number>(0);
   onAdd = output<void>();
   onEdit = output<Employee>();
+  onDeleted = output<void>();
 
   // Reactive branch ID from logged in user profile
   private branchId = computed(() => this.supabase.userProfile()?.branch_id || '');
@@ -69,7 +75,7 @@ export class EmployeesList {
     {
       label: 'Eliminar',
       icon: 'delete',
-      onClick: (e: Employee) => this.deleteEmployee(e),
+      onClick: (e: Employee) => this.openDeleteModal(e),
       class:
         'size-9 flex items-center justify-center bg-red-50 dark:bg-red-500/10 hover:bg-red-500 hover:text-white text-red-500 transition-all rounded-lg',
     },
@@ -99,16 +105,28 @@ export class EmployeesList {
     },
   ];
 
-  async deleteEmployee(employee: Employee) {
-    if (confirm(`¿Estás seguro de eliminar a ${employee.full_name}?`)) {
-      try {
-        await this.employeesService.deleteEmployee(employee.id);
-        // We'd ideally have a way to trigger refresh from here if not using signals effectively
-        // but since this is a child, it's better to emit an event or use a shared state.
-        // For simplicity, I'll update the local signal if I had it, or the parent can handle it.
-      } catch (err) {
-        console.error('Error deleting employee:', err);
-      }
+  openDeleteModal(employee: Employee) {
+    this.employeeToDelete.set(employee);
+    this.isDeleteModalOpen.set(true);
+  }
+
+  async confirmDelete() {
+    const employee = this.employeeToDelete();
+    if (!employee) return;
+
+    try {
+      await this.employeesService.deleteEmployee(employee.id);
+      this.alertService.success(
+        'Empleado eliminado',
+        `El empleado "${employee.full_name}" ha sido eliminado.`,
+      );
+      this.onDeleted.emit();
+    } catch (err: any) {
+      console.error('Error deleting employee:', err);
+      this.alertService.error('Error', err.message || 'No se pudo eliminar el empleado.');
+    } finally {
+      this.isDeleteModalOpen.set(false);
+      this.employeeToDelete.set(null);
     }
   }
 }

@@ -6,18 +6,18 @@ import { AlertService } from '@app/core/services/alert';
 import { Inventory as InventoryService } from '@app/core/services/inventory';
 import { Products as ProductService } from '@app/core/services/products';
 import { Supabase } from '@app/core/services/supabase';
+import { ConfirmationModal } from '@shared/components/confirmation-modal/confirmation-modal';
 import {
-    ActionButton,
-    ColumnConfig,
-    DynamicTable,
-} from '@app/shared/components/dynamic-table/dynamic-table';
-import { Modal } from '@app/shared/components/modal/modal';
+  ActionButton,
+  ColumnConfig,
+  DynamicTable,
+} from '@shared/components/dynamic-table/dynamic-table';
+import { Modal } from '@shared/components/modal/modal';
 import { from, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-recipes',
-  standalone: true,
-  imports: [CommonModule, DynamicTable, Modal, ReactiveFormsModule],
+  imports: [CommonModule, DynamicTable, Modal, ReactiveFormsModule, ConfirmationModal],
   templateUrl: './recipes.html',
   styleUrl: './recipes.css',
 })
@@ -32,6 +32,10 @@ export class Recipes {
   selectedProductId = signal<string | null>(null);
   isModalOpen = signal(false);
   isLoadingModal = signal(false);
+
+  // State for Delete Confirmation
+  isDeleteModalOpen = signal(false);
+  ingredientToDelete = signal<any>(null);
 
   // Reactive branch ID from logged in user profile
   private branchId = computed(() => this.supabase.userProfile()?.branch_id || '');
@@ -100,7 +104,7 @@ export class Recipes {
     {
       label: 'Eliminar',
       icon: 'delete',
-      onClick: (item) => this.deleteIngredient(item),
+      onClick: (item) => this.openDeleteModal(item),
       class:
         'size-8 flex items-center justify-center bg-red-50 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-all',
     },
@@ -155,14 +159,25 @@ export class Recipes {
     }
   }
 
-  async deleteIngredient(recipeItem: any) {
-    if (confirm(`¿Eliminar ${recipeItem.item_name} de la receta?`)) {
-      try {
-        await this.inventoryService.deleteRecipe(recipeItem.id);
-        this.recipeRefreshTrigger.update((v) => v + 1);
-      } catch (err) {
-        console.error('Error deleting recipe item:', err);
-      }
+  openDeleteModal(ingredient: any) {
+    this.ingredientToDelete.set(ingredient);
+    this.isDeleteModalOpen.set(true);
+  }
+
+  async confirmDelete() {
+    const ingredient = this.ingredientToDelete();
+    if (!ingredient) return;
+
+    try {
+      await this.inventoryService.deleteRecipe(ingredient.id);
+      this.alertService.success('Insumo eliminado', 'El insumo ha sido removido de la receta.');
+      this.recipeRefreshTrigger.update((v) => v + 1);
+    } catch (err: any) {
+      console.error('Error deleting recipe item:', err);
+      this.alertService.error('Error', err.message || 'No se pudo eliminar el insumo.');
+    } finally {
+      this.isDeleteModalOpen.set(false);
+      this.ingredientToDelete.set(null);
     }
   }
 }

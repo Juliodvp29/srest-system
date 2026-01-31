@@ -3,7 +3,6 @@ import { CategoriesList } from './categories-list/categories-list';
 
 @Component({
   selector: 'app-categories',
-  standalone: true,
   imports: [CategoriesList],
   templateUrl: './categories.html',
   styleUrl: './categories.css',

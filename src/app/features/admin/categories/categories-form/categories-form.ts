@@ -7,7 +7,6 @@ import { Products } from '@app/core/services/products';
 
 @Component({
   selector: 'app-categories-form',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './categories-form.html',
   styleUrl: './categories-form.css',

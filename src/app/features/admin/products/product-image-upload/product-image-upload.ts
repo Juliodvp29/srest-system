@@ -3,7 +3,6 @@ import { Storages } from '@app/core/services/storages';
 
 @Component({
   selector: 'app-product-image-upload',
-  standalone: true,
   imports: [],
   templateUrl: './product-image-upload.html',
   styleUrl: './product-image-upload.css',

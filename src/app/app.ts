@@ -6,7 +6,6 @@ import { Loader } from './shared/components/loader/loader';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [RouterOutlet, Loader, AlertComponent],
   templateUrl: './app.html',
   styleUrl: './app.css',

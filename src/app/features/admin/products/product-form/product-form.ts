@@ -11,7 +11,6 @@ import { AlertService } from '@app/core/services/alert';
 
 @Component({
   selector: 'app-product-form',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, ProductImageUpload],
   templateUrl: './product-form.html',
   styleUrl: './product-form.css',
