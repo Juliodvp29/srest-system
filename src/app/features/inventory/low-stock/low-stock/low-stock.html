@@ -1,1 +1,9 @@
-<p>low-stock works!</p>
+<div class="h-full">
+  <app-dynamic-table
+    [data]="displayData()"
+    [columns]="columns"
+    title="Alertas de Stock Bajo"
+    description="Insumos que requieren reposición inmediata para evitar quiebres de stock."
+    emptyMessage="No hay insumos con stock bajo en este momento. ¡Todo está en orden!"
+  />
+</div>

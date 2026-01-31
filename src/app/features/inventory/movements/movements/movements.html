@@ -1,1 +1,10 @@
-<p>movements works!</p>
+<div class="h-full">
+  <app-dynamic-table
+    [data]="displayData()"
+    [columns]="columns"
+    [filters]="filters"
+    title="Historial de Movimientos"
+    description="Registro detallado de todas las entradas y salidas de inventario."
+    emptyMessage="No hay movimientos registrados para este local."
+  />
+</div>

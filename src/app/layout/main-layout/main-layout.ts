@@ -13,6 +13,7 @@ export class MainLayout {
   private router = inject(Router);
 
   isMobileMenuOpen = signal(false);
+  isInventoryOpen = signal(true);
   currentUser = this.supabase.currentUser;
   userRole = this.supabase.userRole;
   userProfile = this.supabase.userProfile;

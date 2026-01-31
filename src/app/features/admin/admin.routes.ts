@@ -12,7 +12,7 @@ export const ADMIN_ROUTES: Routes = [
     path: 'categories',
     canActivate: [roleGuard],
     data: { roles: ['admin', 'manager'] },
-    loadComponent: () => import('./categories/categories/categories').then((m) => m.Categories),
+    loadComponent: () => import('./categories/categories').then((m) => m.Categories),
   },
   {
     path: 'modifiers',

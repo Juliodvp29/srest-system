@@ -1,1 +1,89 @@
-<p>categories-form works!</p>
+<form [formGroup]="categoryForm" (ngSubmit)="onSubmit()" class="space-y-6">
+  <!-- Name & Display Order -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div class="space-y-1.5">
+      <label
+        class="text-[10px] font-black uppercase tracking-widest text-sage dark:text-sage/40 ml-1"
+      >
+        Nombre de la Categoría
+      </label>
+      <input
+        type="text"
+        formControlName="name"
+        placeholder="Ej: Entradas"
+        class="w-full px-4 py-3 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 text-slate-900 dark:text-white placeholder:text-sage/30 transition-all font-medium"
+      />
+      @if (categoryForm.controls.name.invalid && categoryForm.controls.name.touched) {
+        <span class="text-xs text-red-500 italic ml-1">Mínimo 3 caracteres</span>
+      }
+    </div>
+
+    <div class="space-y-1.5">
+      <label
+        class="text-[10px] font-black uppercase tracking-widest text-sage dark:text-sage/40 ml-1"
+      >
+        Orden de Visualización
+      </label>
+      <input
+        type="number"
+        formControlName="display_order"
+        class="w-full px-4 py-3 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 text-slate-900 dark:text-white transition-all font-mono font-bold"
+      />
+    </div>
+  </div>
+
+  <!-- Description -->
+  <div class="space-y-1.5">
+    <label
+      class="text-[10px] font-black uppercase tracking-widest text-sage dark:text-sage/40 ml-1"
+    >
+      Descripción
+    </label>
+    <textarea
+      formControlName="description"
+      rows="3"
+      placeholder="Descripción breve de la categoría..."
+      class="w-full px-4 py-3 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 text-slate-900 dark:text-white transition-all font-medium resize-none"
+    ></textarea>
+  </div>
+
+  <!-- Availability Toggle -->
+  <div
+    class="flex items-center justify-between p-4 bg-slate-50/50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/5"
+  >
+    <div class="flex flex-col">
+      <span class="text-xs font-bold text-slate-700 dark:text-slate-200">Categoría Activa</span>
+      <span class="text-[10px] text-sage">Visible en el menú de selección</span>
+    </div>
+    <label class="relative inline-flex items-center cursor-pointer">
+      <input type="checkbox" formControlName="is_active" class="sr-only peer" />
+      <div
+        class="w-11 h-6 bg-slate-200 dark:bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"
+      ></div>
+    </label>
+  </div>
+
+  <!-- Actions -->
+  <div class="flex gap-3 pt-4 border-t border-slate-100 dark:border-white/5">
+    <button
+      type="button"
+      (click)="cancel()"
+      class="flex-1 px-6 py-4 border border-slate-200 dark:border-white/10 text-slate-500 dark:text-sage/60 font-bold rounded-2xl hover:bg-slate-50 dark:hover:bg-white/5 transition-all text-sm"
+    >
+      Cancelar
+    </button>
+    <button
+      type="submit"
+      [disabled]="categoryForm.invalid || isLoading()"
+      class="flex-[2] px-6 py-4 bg-primary hover:bg-primary/90 text-background-dark font-black rounded-2xl transition-all disabled:opacity-30 flex items-center justify-center gap-2 text-sm shadow-xl shadow-primary/20"
+    >
+      @if (isLoading()) {
+        <span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+        Guardando...
+      } @else {
+        <span class="material-symbols-outlined text-[20px]">save</span>
+        {{ initialData() ? 'Actualizar Categoría' : 'Crear Categoría' }}
+      }
+    </button>
+  </div>
+</form>

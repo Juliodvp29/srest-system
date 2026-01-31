@@ -7,8 +7,7 @@ import { Supabase } from './supabase';
 })
 export class Inventory {
   private supabase = inject(Supabase);
-  constructor() { }
-
+  constructor() {}
 
   // Get all items
   async getAllInventoryItems(branchId: string): Promise<InventoryItem[]> {
@@ -62,26 +61,19 @@ export class Inventory {
 
   // Delete inventory item
   async deleteInventoryItem(id: string): Promise<void> {
-    const { error } = await this.supabase.client
-      .from('inventory_items')
-      .delete()
-      .eq('id', id);
+    const { error } = await this.supabase.client.from('inventory_items').delete().eq('id', id);
 
     if (error) throw error;
   }
 
   // Register purchase
-  async registerPurchase(
-    inventoryItemId: string,
-    quantity: number,
-    notes?: string
-  ): Promise<void> {
+  async registerPurchase(inventoryItemId: string, quantity: number, notes?: string): Promise<void> {
     // Create movement
     await this.createMovement({
       inventory_item_id: inventoryItemId,
       movement_type: 'purchase',
       quantity,
-      notes
+      notes,
     });
 
     // Update stock
@@ -92,14 +84,14 @@ export class Inventory {
   async registerConsumption(
     inventoryItemId: string,
     quantity: number,
-    notes?: string
+    notes?: string,
   ): Promise<void> {
     // Create movement
     await this.createMovement({
       inventory_item_id: inventoryItemId,
       movement_type: 'consumption',
       quantity: -quantity, // negative because it's consumed
-      notes
+      notes,
     });
 
     // Update stock
@@ -110,29 +102,25 @@ export class Inventory {
   async registerAdjustment(
     inventoryItemId: string,
     quantity: number,
-    notes: string
+    notes: string,
   ): Promise<void> {
     await this.createMovement({
       inventory_item_id: inventoryItemId,
       movement_type: 'adjustment',
       quantity,
-      notes
+      notes,
     });
 
     await this.adjustStock(inventoryItemId, quantity);
   }
 
   // Register waste
-  async registerWaste(
-    inventoryItemId: string,
-    quantity: number,
-    notes?: string
-  ): Promise<void> {
+  async registerWaste(inventoryItemId: string, quantity: number, notes?: string): Promise<void> {
     await this.createMovement({
       inventory_item_id: inventoryItemId,
       movement_type: 'waste',
       quantity: -quantity,
-      notes
+      notes,
     });
 
     await this.adjustStock(inventoryItemId, -quantity);
@@ -172,10 +160,9 @@ export class Inventory {
     if (updateError) throw updateError;
   }
 
-  // Get movement history
   async getMovementHistory(
     inventoryItemId: string,
-    limit: number = 50
+    limit: number = 50,
   ): Promise<InventoryMovement[]> {
     const { data, error } = await this.supabase.client
       .from('inventory_movements')
@@ -186,6 +173,28 @@ export class Inventory {
 
     if (error) throw error;
     return data as InventoryMovement[];
+  }
+
+  // Get all movements for a branch
+  async getAllMovements(branchId: string, limit: number = 100): Promise<any[]> {
+    const { data, error } = await this.supabase.client
+      .from('inventory_movements')
+      .select(
+        `
+        *,
+        inventory_item:inventory_items!inner(
+          name,
+          unit,
+          branch_id
+        )
+      `,
+      )
+      .eq('inventory_items.branch_id', branchId)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+    return data;
   }
 
   // Create recipe for a product
@@ -204,7 +213,8 @@ export class Inventory {
   async getRecipeByProduct(productId: string): Promise<any[]> {
     const { data, error } = await this.supabase.client
       .from('recipes')
-      .select(`
+      .select(
+        `
         *,
         inventory_item:inventory_items(
           id,
@@ -213,7 +223,8 @@ export class Inventory {
           current_stock,
           cost_per_unit
         )
-      `)
+      `,
+      )
       .eq('product_id', productId);
 
     if (error) throw error;
@@ -221,7 +232,10 @@ export class Inventory {
   }
 
   // Check if there is enough stock to prepare a product
-  async checkStockForProduct(productId: string, quantity: number = 1): Promise<{
+  async checkStockForProduct(
+    productId: string,
+    quantity: number = 1,
+  ): Promise<{
     hasStock: boolean;
     missingItems: string[];
   }> {
@@ -234,14 +248,14 @@ export class Inventory {
 
       if (available < required) {
         missingItems.push(
-          `${ingredient.inventory_item.name} (necesitas ${required} ${ingredient.inventory_item.unit}, tienes ${available})`
+          `${ingredient.inventory_item.name} (necesitas ${required} ${ingredient.inventory_item.unit}, tienes ${available})`,
         );
       }
     }
 
     return {
       hasStock: missingItems.length === 0,
-      missingItems
+      missingItems,
     };
   }
 
@@ -255,17 +269,14 @@ export class Inventory {
       await this.registerConsumption(
         ingredient.inventory_item_id,
         consumedQuantity,
-        `Preparación de producto ID: ${productId}`
+        `Preparación de producto ID: ${productId}`,
       );
     }
   }
 
   // Delete recipe
   async deleteRecipe(recipeId: string): Promise<void> {
-    const { error } = await this.supabase.client
-      .from('recipes')
-      .delete()
-      .eq('id', recipeId);
+    const { error } = await this.supabase.client.from('recipes').delete().eq('id', recipeId);
 
     if (error) throw error;
   }

@@ -1,1 +1,26 @@
-<p>item-list works!</p>
+<div class="h-full">
+  <app-dynamic-table
+    [data]="displayData()"
+    [columns]="columns"
+    [actions]="actions"
+    [filters]="filters"
+    title="Insumos de Inventario"
+    description="Gestiona las materias primas y existencias de tu restaurante."
+    [showAddButton]="true"
+    addButtonLabel="Nuevo Insumo"
+    (onAdd)="openCreateModal()"
+  />
+
+  <!-- Modal for Item Form -->
+  <app-modal
+    [isOpen]="isModalOpen()"
+    [title]="selectedItem() ? 'Editar Insumo' : 'Nuevo Insumo'"
+    (onClose)="closeModal()"
+  >
+    <app-item-form
+      [initialData]="selectedItem()"
+      (onSaved)="onItemSaved()"
+      (onCancel)="closeModal()"
+    />
+  </app-modal>
+</div>

@@ -78,6 +78,17 @@
         </a>
 
         <a
+          routerLink="/admin/categories"
+          routerLinkActive="bg-primary/10 text-primary"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-sage/80 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group"
+        >
+          <span class="material-symbols-outlined transition-transform group-hover:scale-110"
+            >category</span
+          >
+          <span class="font-medium">Categorías</span>
+        </a>
+
+        <a
           routerLink="/admin/employees"
           routerLinkActive="bg-primary/10 text-primary"
           class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-sage/80 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group"
@@ -99,16 +110,66 @@
           <span class="font-medium">Configuración</span>
         </a>
 
-        <a
-          routerLink="/inventory"
-          routerLinkActive="bg-primary/10 text-primary"
-          class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-sage/80 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group"
-        >
-          <span class="material-symbols-outlined transition-transform group-hover:scale-110"
-            >reorder</span
+        <!-- Inventory Collapsible -->
+        <div class="space-y-1">
+          <button
+            (click)="isInventoryOpen.set(!isInventoryOpen())"
+            class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-slate-600 dark:text-sage/80 hover:bg-slate-100 dark:hover:bg-white/5 transition-all group"
           >
-          <span class="font-medium">Inventario</span>
-        </a>
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined transition-transform group-hover:scale-110"
+                >inventory</span
+              >
+              <span class="font-medium">Inventario</span>
+            </div>
+            <span
+              class="material-symbols-outlined text-[18px] transition-transform duration-300"
+              [class.rotate-180]="isInventoryOpen()"
+            >
+              expand_more
+            </span>
+          </button>
+
+          @if (isInventoryOpen()) {
+            <div class="pl-11 space-y-1 mt-1">
+              <a
+                routerLink="/inventory/items"
+                routerLinkActive="text-primary font-bold"
+                class="flex items-center py-2 text-sm text-slate-500 hover:text-slate-900 dark:text-sage/60 dark:hover:text-white transition-colors"
+              >
+                Insumos
+              </a>
+              <a
+                routerLink="/inventory/low-stock"
+                routerLinkActive="text-primary font-bold"
+                class="flex items-center py-2 text-sm text-slate-500 hover:text-slate-900 dark:text-sage/60 dark:hover:text-white transition-colors"
+              >
+                Stock Bajo
+              </a>
+              <a
+                routerLink="/inventory/purchase-order"
+                routerLinkActive="text-primary font-bold"
+                class="flex items-center py-2 text-sm text-slate-500 hover:text-slate-900 dark:text-sage/60 dark:hover:text-white transition-colors"
+              >
+                Compras
+              </a>
+              <a
+                routerLink="/inventory/movements"
+                routerLinkActive="text-primary font-bold"
+                class="flex items-center py-2 text-sm text-slate-500 hover:text-slate-900 dark:text-sage/60 dark:hover:text-white transition-colors"
+              >
+                Movimientos
+              </a>
+              <a
+                routerLink="/inventory/recipes"
+                routerLinkActive="text-primary font-bold"
+                class="flex items-center py-2 text-sm text-slate-500 hover:text-slate-900 dark:text-sage/60 dark:hover:text-white transition-colors"
+              >
+                Escandallos
+              </a>
+            </div>
+          }
+        </div>
 
         <a
           routerLink="/reports"
@@ -229,6 +290,15 @@
           <span class="font-medium">Productos</span>
         </a>
         <a
+          routerLink="/admin/categories"
+          routerLinkActive="bg-primary/10 text-primary"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-sage"
+        >
+          <span class="material-symbols-outlined">category</span>
+          <span class="font-medium">Categorías</span>
+        </a>
+
+        <a
           routerLink="/admin/employees"
           routerLinkActive="bg-primary/10 text-primary"
           class="flex items-center gap-3 px-4 py-3 rounded-xl text-sage"
@@ -237,14 +307,50 @@
           <span class="font-medium">Empleados</span>
         </a>
 
-        <a
-          routerLink="/inventory"
-          routerLinkActive="bg-primary/10 text-primary"
-          class="flex items-center gap-3 px-4 py-3 rounded-xl text-sage"
-        >
-          <span class="material-symbols-outlined">reorder</span>
-          <span class="font-medium">Inventario</span>
-        </a>
+        <!-- Mobile Inventory Submenu -->
+        <div class="space-y-1">
+          <div class="flex items-center gap-3 px-4 py-3 rounded-xl text-sage">
+            <span class="material-symbols-outlined">inventory</span>
+            <span class="font-medium">Inventario</span>
+          </div>
+          <div class="pl-11 space-y-1">
+            <a
+              routerLink="/inventory/items"
+              routerLinkActive="text-primary font-bold"
+              class="block py-2 text-sm text-sage/70"
+            >
+              Insumos
+            </a>
+            <a
+              routerLink="/inventory/low-stock"
+              routerLinkActive="text-primary font-bold"
+              class="block py-2 text-sm text-sage/70"
+            >
+              Stock Bajo
+            </a>
+            <a
+              routerLink="/inventory/purchase-order"
+              routerLinkActive="text-primary font-bold"
+              class="block py-2 text-sm text-sage/70"
+            >
+              Compras
+            </a>
+            <a
+              routerLink="/inventory/movements"
+              routerLinkActive="text-primary font-bold"
+              class="block py-2 text-sm text-sage/70"
+            >
+              Movimientos
+            </a>
+            <a
+              routerLink="/inventory/recipes"
+              routerLinkActive="text-primary font-bold"
+              class="block py-2 text-sm text-sage/70"
+            >
+              Escandallos
+            </a>
+          </div>
+        </div>
 
         <a
           routerLink="/reports"

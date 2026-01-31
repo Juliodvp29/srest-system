@@ -1,1 +1,27 @@
-<p>categories-list works!</p>
+<div class="h-full">
+  <!-- Table -->
+  <app-dynamic-table
+    [data]="categories()"
+    [columns]="categoryColumns"
+    [actions]="categoryActions"
+    title="Categorías"
+    description="Gestiona las categorías de productos disponibles en el menú."
+    searchPlaceholder="Buscar categorías..."
+    [showAddButton]="true"
+    addButtonLabel="Nueva Categoría"
+    (onAdd)="openCreateModal()"
+  />
+
+  <!-- Modal -->
+  <app-modal
+    [isOpen]="isModalOpen()"
+    [title]="selectedCategory() ? 'Editar Categoría' : 'Nueva Categoría'"
+    (close)="closeModal()"
+  >
+    <app-categories-form
+      [initialData]="selectedCategory()"
+      (onSaved)="onCategorySaved()"
+      (onCancel)="closeModal()"
+    />
+  </app-modal>
+</div>
