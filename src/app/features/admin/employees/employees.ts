@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { Modal } from '@app/shared/components/modal/modal';
 import { Employee } from '@services/employees';
 import { EmployeesForm } from './employees-form/employees-form';
@@ -7,6 +7,7 @@ import { EmployeesList } from './employees-list/employees-list';
 
 @Component({
   selector: 'app-employees',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, EmployeesList, Modal, EmployeesForm],
   templateUrl: './employees.html',
   styleUrl: './employees.css',

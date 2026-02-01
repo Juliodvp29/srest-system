@@ -7,17 +7,19 @@ import { Supabase } from './supabase';
 })
 export class Orders {
   private supabase = inject(Supabase);
-  constructor() { }
+  constructor() {}
 
   // Get active orders for a branch
   async getActiveOrders(branchId: string): Promise<Order[]> {
     const { data, error } = await this.supabase.client
       .from('orders')
-      .select(`
+      .select(
+        `
         *,
         table:tables(table_number),
         waiter:employees(full_name)
-      `)
+      `,
+      )
       .eq('branch_id', branchId)
       .in('status', ['pending', 'preparing', 'ready'])
       .order('created_at', { ascending: false });
@@ -30,7 +32,8 @@ export class Orders {
   async getOrderWithItems(orderId: string): Promise<any> {
     const { data, error } = await this.supabase.client
       .from('orders')
-      .select(`
+      .select(
+        `
         *,
         table:tables(table_number),
         waiter:employees(full_name),
@@ -42,7 +45,8 @@ export class Orders {
             modifier:modifiers(name, price_adjustment)
           )
         )
-      `)
+      `,
+      )
       .eq('id', orderId)
       .single();
 
@@ -59,7 +63,7 @@ export class Orders {
       .from('orders')
       .insert({
         ...order,
-        order_number: orderNumber
+        order_number: orderNumber,
       })
       .select()
       .single();
@@ -100,16 +104,14 @@ export class Orders {
   // Add modifiers to an item
   async addModifiersToItem(
     orderItemId: string,
-    modifiers: Array<{ modifier_id: string; modifier_name: string; price_adjustment: number }>
+    modifiers: Array<{ modifier_id: string; modifier_name: string; price_adjustment: number }>,
   ): Promise<void> {
-    const modifiersData = modifiers.map(mod => ({
+    const modifiersData = modifiers.map((mod) => ({
       order_item_id: orderItemId,
-      ...mod
+      ...mod,
     }));
 
-    const { error } = await this.supabase.client
-      .from('order_item_modifiers')
-      .insert(modifiersData);
+    const { error } = await this.supabase.client.from('order_item_modifiers').insert(modifiersData);
 
     if (error) throw error;
   }
@@ -145,10 +147,13 @@ export class Orders {
   }
 
   // Split bill
-  async splitBill(orderId: string, splits: Array<{
-    customer_name?: string;
-    items: Array<{ order_item_id: string; quantity: number; amount: number }>;
-  }>): Promise<void> {
+  async splitBill(
+    orderId: string,
+    splits: Array<{
+      customer_name?: string;
+      items: Array<{ order_item_id: string; quantity: number; amount: number }>;
+    }>,
+  ): Promise<void> {
     // Get order details
     const order = await this.getOrderWithItems(orderId);
 
@@ -170,7 +175,7 @@ export class Orders {
           subtotal,
           tax,
           total,
-          tip: 0
+          tip: 0,
         })
         .select()
         .single();
@@ -178,11 +183,11 @@ export class Orders {
       if (splitError) throw splitError;
 
       // Assign items to split
-      const splitItemsData = split.items.map(item => ({
+      const splitItemsData = split.items.map((item) => ({
         bill_split_id: billSplit.id,
         order_item_id: item.order_item_id,
         quantity: item.quantity,
-        amount: item.amount
+        amount: item.amount,
       }));
 
       const { error: itemsError } = await this.supabase.client
@@ -197,7 +202,8 @@ export class Orders {
   async getBillSplits(orderId: string): Promise<any[]> {
     const { data, error } = await this.supabase.client
       .from('bill_splits')
-      .select(`
+      .select(
+        `
         *,
         bill_split_items(
           *,
@@ -206,7 +212,8 @@ export class Orders {
             product:products(name)
           )
         )
-      `)
+      `,
+      )
       .eq('order_id', orderId)
       .order('split_number');
 
@@ -224,9 +231,9 @@ export class Orders {
           event: '*',
           schema: 'public',
           table: 'orders',
-          filter: `branch_id=eq.${branchId}`
+          filter: `branch_id=eq.${branchId}`,
         },
-        callback
+        callback,
       )
       .subscribe();
   }
@@ -241,10 +248,31 @@ export class Orders {
           event: '*',
           schema: 'public',
           table: 'order_items',
-          filter: `order_id=eq.${orderId}`
+          filter: `order_id=eq.${orderId}`,
         },
-        callback
+        callback,
       )
       .subscribe();
+  }
+
+  // Get daily stats
+  async getDailyStats(branchId: string): Promise<{ totalSales: number; orderCount: number }> {
+    const today = new Date().toISOString().split('T')[0];
+
+    // Get orders for today that are not cancelled
+    const { data: orders, error } = await this.supabase.client
+      .from('orders')
+      .select('total, status')
+      .eq('branch_id', branchId)
+      .gte('created_at', `${today}T00:00:00`)
+      .lte('created_at', `${today}T23:59:59`)
+      .neq('status', 'cancelled');
+
+    if (error) throw error;
+
+    const totalSales = orders?.reduce((sum, order) => sum + (order.total || 0), 0) || 0;
+    const orderCount = orders?.length || 0;
+
+    return { totalSales, orderCount };
   }
 }

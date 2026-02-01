@@ -13,15 +13,27 @@
         </p>
       </div>
 
-      @if (showAddButton()) {
-        <button
-          (click)="onAdd.emit()"
-          class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-background-dark font-bold rounded-xl transition-all active:scale-95 shadow-lg shadow-primary/20"
-        >
-          <span class="material-symbols-outlined text-[20px]">add</span>
-          <span>{{ addButtonLabel() }}</span>
-        </button>
-      }
+      <div class="flex items-center gap-3">
+        @if (enableExport()) {
+          <button
+            (click)="openExportDialog()"
+            class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-all active:scale-95 shadow-lg shadow-green-600/20"
+          >
+            <span class="material-symbols-outlined text-[20px]">download</span>
+            <span>Exportar</span>
+          </button>
+        }
+
+        @if (showAddButton()) {
+          <button
+            (click)="onAdd.emit()"
+            class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-background-dark font-bold rounded-xl transition-all active:scale-95 shadow-lg shadow-primary/20"
+          >
+            <span class="material-symbols-outlined text-[20px]">add</span>
+            <span>{{ addButtonLabel() }}</span>
+          </button>
+        }
+      </div>
     </div>
 
     <!-- Search bar -->
@@ -270,5 +282,18 @@
         </button>
       </div>
     </div>
+  }
+
+  <!-- Export Dialog -->
+  @if (isExportDialogOpen()) {
+    <app-export-dialog
+      [data]="filteredData()"
+      [currentPageData]="paginatedData()"
+      [columns]="columns()"
+      [tableName]="title()"
+      [hasActiveFilters]="hasActiveFilters()"
+      (onExport)="onExport($event)"
+      (onCancel)="isExportDialogOpen.set(false)"
+    />
   }
 </div>

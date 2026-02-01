@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, input, output, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { XlsxExportService } from '@app/core/services/xlsx-export.service';
+import { ExportDialog, ExportDialogOptions } from '../export-dialog/export-dialog';
 
 export interface ColumnConfig {
   key: string;
@@ -29,11 +31,14 @@ export interface ActionButton {
 
 @Component({
   selector: 'app-dynamic-table',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ExportDialog],
   templateUrl: './dynamic-table.html',
   styleUrl: './dynamic-table.css',
 })
 export class DynamicTable {
+  // Services
+  private exportService = inject(XlsxExportService);
+
   // Inputs
   data = input.required<any[]>();
   columns = input.required<ColumnConfig[]>();
@@ -47,6 +52,8 @@ export class DynamicTable {
   showAddButton = input<boolean>(false);
   addButtonLabel = input<string>('Add New');
   emptyMessage = input<string>('No data found');
+  enableExport = input<boolean>(true);
+  exportFilename = input<string>('');
 
   // Outputs
   onAdd = output<void>();
@@ -57,6 +64,7 @@ export class DynamicTable {
   activeFilters = signal<{ [key: string]: any }>({});
   sortConfig = signal<{ key: string; direction: 'asc' | 'desc' }>({ key: '', direction: 'asc' });
   currentPage = signal<number>(1);
+  isExportDialogOpen = signal<boolean>(false);
 
   // Math para el template
   Math = Math;
@@ -289,5 +297,43 @@ export class DynamicTable {
       }
       return true;
     });
+  }
+
+  openExportDialog(): void {
+    this.isExportDialogOpen.set(true);
+  }
+
+  onExport(options: ExportDialogOptions): void {
+    // Determine data to export based on scope
+    let dataToExport: any[];
+
+    switch (options.scope) {
+      case 'current':
+        dataToExport = this.paginatedData();
+        break;
+      case 'range':
+        const start = Math.max(0, (options.rangeStart || 1) - 1);
+        const end = Math.min(this.filteredData().length, options.rangeEnd || 100);
+        dataToExport = this.filteredData().slice(start, end);
+        break;
+      default:
+        dataToExport = this.filteredData();
+    }
+
+    this.exportService.exportToXlsx({
+      data: dataToExport,
+      columns: this.columns(),
+      selectedColumns: options.selectedColumns,
+      filename: options.filename || this.exportFilename() || this.title(),
+      dateFormat: options.dateFormat,
+      includeFilterSummary: options.includeFilterSummary,
+      filterInfo: {
+        searchTerm: this.searchTerm(),
+        activeFilters: this.activeFilters(),
+        sortConfig: this.sortConfig(),
+      },
+    });
+
+    this.isExportDialogOpen.set(false);
   }
 }
