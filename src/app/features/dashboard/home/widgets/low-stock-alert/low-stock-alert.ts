@@ -24,7 +24,8 @@ export class LowStockAlert {
   lowStockItems = toSignal(
     toObservable(computed(() => ({ bid: this.branchId(), t: this.refreshTrigger() }))).pipe(
       switchMap(({ bid }) => {
-        if (!bid) return from(Promise.resolve([]));
+        if (!bid) return from(Promise.resolve([] as InventoryItem[]));
+        console.log('[LowStockAlert] Fetching items for branch:', bid);
         return from(this.inventoryService.getLowStockItems(bid));
       }),
     ),

@@ -74,7 +74,7 @@
         </div>
       } @else {
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-          @for (prod of filteredProducts(); track prod.id) {
+          @for (prod of filteredProducts(); track prod.id; let i = $index) {
             <button
               (click)="addToCart(prod)"
               class="group flex flex-col items-start text-left bg-white dark:bg-slate-800 rounded-2xl p-3 shadow-sm border border-slate-200 dark:border-slate-700 hover:border-primary/50 dark:hover:border-primary/50 transition-all active:scale-95 h-full"
@@ -84,8 +84,10 @@
               >
                 @if (prod.image_url) {
                   <img
-                    [src]="prod.image_url"
-                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    [ngSrc]="prod.image_url"
+                    fill
+                    class="object-cover group-hover:scale-105 transition-transform duration-500"
+                    [priority]="i < 8"
                   />
                 } @else {
                   <div
