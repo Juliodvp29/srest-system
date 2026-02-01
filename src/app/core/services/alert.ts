@@ -9,6 +9,10 @@ export interface Alert {
   message: string;
   autoClose?: boolean;
   duration?: number;
+  isConfirm?: boolean;
+  resolve?: (value: boolean) => void;
+  confirmLabel?: string;
+  cancelLabel?: string;
 }
 
 @Injectable({
@@ -46,8 +50,35 @@ export class AlertService {
     this.addAlert('warning', title, message, duration);
   }
 
+  /**
+   * Show a confirmation dialog
+   */
+  confirm(
+    title: string,
+    message: string,
+    confirmLabel = 'Confirmar',
+    cancelLabel = 'Cancelar',
+  ): Promise<boolean> {
+    return new Promise((resolve) => {
+      const id = this.generateId();
+      const alert: Alert = {
+        id,
+        type: 'warning',
+        title,
+        message,
+        autoClose: false,
+        isConfirm: true,
+        resolve,
+        confirmLabel,
+        cancelLabel,
+      };
+
+      this._alerts.update((prev) => [...prev, alert]);
+    });
+  }
+
   private addAlert(type: AlertType, title: string, message: string, duration: number) {
-    const id = crypto.randomUUID();
+    const id = this.generateId();
     const alert: Alert = { id, type, title, message, autoClose: true, duration };
 
     this._alerts.update((prev) => [...prev, alert]);
@@ -57,6 +88,14 @@ export class AlertService {
         this.removeAlert(id);
       }, duration);
     }
+  }
+
+  private generateId(): string {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    // Fallback for insecure contexts (HTTP/IP access)
+    return Math.random().toString(36).substring(2, 11) + Date.now().toString(36);
   }
 
   public removeAlert(id: string) {

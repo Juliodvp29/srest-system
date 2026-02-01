@@ -1,1 +1,147 @@
-<p>split-bill works!</p>
+<div class="h-full flex flex-col bg-slate-50 dark:bg-slate-900 overflow-hidden">
+  <!-- Header -->
+  <header
+    class="p-4 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm z-10 sticky top-0 flex justify-between items-center"
+  >
+    <div class="flex items-center gap-4">
+      <button
+        (click)="router.navigate(['/pos/order-detail', orderId()])"
+        class="p-2 -ml-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 transition-colors"
+      >
+        <span class="material-symbols-outlined">arrow_back</span>
+      </button>
+      <h1 class="text-xl font-black text-slate-900 dark:text-white">Dividir Cuenta</h1>
+    </div>
+
+    <div class="flex gap-3">
+      <button
+        (click)="addSplit()"
+        class="px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-900 dark:text-white rounded-lg font-bold transition-colors flex items-center gap-2"
+      >
+        <span class="material-symbols-outlined">person_add</span>
+        <span>Agregar Persona</span>
+      </button>
+
+      <button
+        (click)="saveSplits()"
+        [disabled]="unassignedItems().length > 0 || saving()"
+        class="px-6 py-2 bg-primary text-slate-900 rounded-lg font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/20 flex items-center gap-2"
+      >
+        @if (saving()) {
+          <span class="material-symbols-outlined animate-spin">progress_activity</span>
+          <span>Guardando...</span>
+        } @else {
+          <span class="material-symbols-outlined">save</span>
+          <span>Confirmar División</span>
+        }
+      </button>
+    </div>
+  </header>
+
+  <div class="flex-1 overflow-hidden flex gap-4 p-4">
+    <!-- LEFT: Unassigned Items -->
+    <div
+      class="w-1/3 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden"
+    >
+      <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-red-50 dark:bg-red-900/10">
+        <h2 class="font-bold text-slate-900 dark:text-white">Items Dispobibles</h2>
+        <p class="text-xs text-slate-500">Haz clic en la persona para asignar</p>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-3 space-y-2">
+        @if (unassignedItems().length === 0) {
+          <div class="h-full flex flex-col items-center justify-center text-green-500/50">
+            <span class="material-symbols-outlined text-5xl">check_circle</span>
+            <p class="font-bold mt-2">Todo asignado</p>
+          </div>
+        }
+        @for (item of unassignedItems(); track item.order_item_id) {
+          <div
+            class="p-3 bg-white dark:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-600 shadow-sm flex flex-col gap-2"
+          >
+            <div class="flex justify-between items-start">
+              <span class="font-bold text-slate-900 dark:text-white text-sm">
+                <span class="text-slate-500 mr-1">{{ item.quantity }}x</span>{{ item.name }}
+              </span>
+              <span class="text-sm font-bold">{{
+                item.price | currency: 'CAD' : 'symbol-narrow' : '1.0-0'
+              }}</span>
+            </div>
+
+            <!-- Assign Buttons -->
+            <div class="flex flex-wrap gap-2 mt-1">
+              @for (split of splits(); track split.id; let i = $index) {
+                <button
+                  (click)="moveItemToSplit(item, i)"
+                  class="px-2 py-1 text-xs font-bold rounded bg-slate-100 dark:bg-slate-600 hover:bg-slate-200 dark:hover:bg-slate-500 transition-colors"
+                >
+                  > {{ split.name }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- RIGHT: Splits -->
+    <div class="flex-1 overflow-x-auto pb-4">
+      <div class="flex gap-4 h-full">
+        @for (split of splits(); track split.id; let i = $index) {
+          <div
+            class="w-80 min-w-[320px] bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden"
+          >
+            <!-- Split Header -->
+            <div
+              class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50"
+            >
+              <input
+                [(ngModel)]="split.name"
+                class="bg-transparent font-bold text-slate-900 dark:text-white focus:outline-none focus:underline w-32"
+              />
+              <button
+                (click)="removeSplit(i)"
+                class="text-slate-400 hover:text-red-500 transition-colors"
+              >
+                <span class="material-symbols-outlined">delete</span>
+              </button>
+            </div>
+
+            <!-- Split Items -->
+            <div class="flex-1 overflow-y-auto p-3 space-y-2">
+              @for (item of split.items; track item.order_item_id) {
+                <div
+                  class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl border border-slate-100 dark:border-slate-700 flex justify-between items-center"
+                >
+                  <div>
+                    <span class="font-bold text-sm block">
+                      <span class="text-slate-500 mr-1">{{ item.quantity }}x</span>{{ item.name }}
+                    </span>
+                  </div>
+                  <button
+                    (click)="returnItemFromSplit(item, i)"
+                    class="text-slate-400 hover:text-red-500 transition-colors"
+                  >
+                    <span class="material-symbols-outlined text-lg">close</span>
+                  </button>
+                </div>
+              }
+            </div>
+
+            <!-- Split Total -->
+            <div
+              class="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/20"
+            >
+              <div class="flex justify-between items-center">
+                <span class="text-sm font-bold text-slate-500">Total</span>
+                <span class="text-xl font-black text-slate-900 dark:text-white">
+                  {{ getSplitTotal(split) | currency: 'CAD' : 'symbol-narrow' : '1.0-0' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

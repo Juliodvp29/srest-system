@@ -26,12 +26,13 @@ export class Inventory {
     const { data, error } = await this.supabase.client
       .from('inventory_items')
       .select('*')
-      .eq('branch_id', branchId)
-      .filter('current_stock', 'lte', 'min_stock')
-      .order('current_stock');
+      .eq('branch_id', branchId);
 
     if (error) throw error;
-    return data as InventoryItem[];
+
+    return (data as InventoryItem[])
+      .filter((item) => item.current_stock <= item.min_stock)
+      .sort((a, b) => a.current_stock - b.current_stock);
   }
 
   // Create inventory item

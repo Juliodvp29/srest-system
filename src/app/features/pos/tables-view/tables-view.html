@@ -1,1 +1,216 @@
-<p>tables-view works!</p>
+<div class="h-full flex flex-col bg-slate-50 dark:bg-slate-900 p-4 md:p-6 overflow-hidden">
+  <!-- Header with Stats -->
+  <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 shrink-0">
+    <div>
+      <h1 class="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Mesas</h1>
+      <p class="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
+        Vista general del salón y estado actual
+      </p>
+    </div>
+
+    <!-- Quick Stats Cards -->
+    <div class="flex gap-3 overflow-x-auto pb-2 md:pb-0">
+      <div
+        class="flex items-center gap-3 px-4 py-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 min-w-[140px]"
+      >
+        <div
+          class="size-10 rounded-full bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400 flex items-center justify-center"
+        >
+          <span class="material-symbols-outlined">table_restaurant</span>
+        </div>
+        <div>
+          <span class="block text-xl font-bold text-slate-900 dark:text-white leading-none">
+            {{ statusStats.available }}
+          </span>
+          <span
+            class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide"
+          >
+            Libres
+          </span>
+        </div>
+      </div>
+
+      <div
+        class="flex items-center gap-3 px-4 py-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 min-w-[140px]"
+      >
+        <div
+          class="size-10 rounded-full bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400 flex items-center justify-center"
+        >
+          <span class="material-symbols-outlined">group</span>
+        </div>
+        <div>
+          <span class="block text-xl font-bold text-slate-900 dark:text-white leading-none">
+            {{ statusStats.occupied }}
+          </span>
+          <span
+            class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide"
+          >
+            Ocupadas
+          </span>
+        </div>
+      </div>
+
+      <div
+        class="flex items-center gap-3 px-4 py-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 min-w-[140px]"
+      >
+        <div
+          class="size-10 rounded-full bg-yellow-100 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 flex items-center justify-center"
+        >
+          <span class="material-symbols-outlined">event_seat</span>
+        </div>
+        <div>
+          <span class="block text-xl font-bold text-slate-900 dark:text-white leading-none">
+            {{ statusStats.reserved }}
+          </span>
+          <span
+            class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide"
+          >
+            Reservadas
+          </span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="flex-1 flex flex-col items-center justify-center text-center p-8">
+      <div
+        class="size-16 rounded-full bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400 flex items-center justify-center mb-4"
+      >
+        <span class="material-symbols-outlined text-3xl">error_outline</span>
+      </div>
+      <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Error cargando mesas</h3>
+      <p class="text-slate-500 dark:text-slate-400 max-w-xs mx-auto mb-6">{{ error() }}</p>
+      <button
+        (click)="loadTables()"
+        class="px-6 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg font-bold hover:opacity-90 transition-opacity"
+      >
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Loading State -->
+  @else if (loading()) {
+    <div
+      class="flex-1 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 animate-pulse"
+    >
+      @for (i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track i) {
+        <div class="aspect-square bg-slate-200 dark:bg-slate-800 rounded-2xl"></div>
+      }
+    </div>
+  }
+
+  <!-- Empty State -->
+  @else if (tables().length === 0) {
+    <div class="flex-1 flex flex-col items-center justify-center text-center p-8">
+      <div
+        class="size-20 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center mb-4"
+      >
+        <span class="material-symbols-outlined text-4xl">table_restaurant</span>
+      </div>
+      <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">
+        No hay mesas configuradas
+      </h3>
+      <p class="text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
+        Contacta a un administrador para configurar la distribución de mesas de esta sucursal.
+      </p>
+    </div>
+  }
+
+  <!-- Tables Grid -->
+  @else {
+    <div class="flex-1 overflow-y-auto">
+      <div
+        class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 pb-20"
+      >
+        @for (table of tables(); track table.id) {
+          <button
+            (click)="handleTableClick(table)"
+            class="group relative aspect-square flex flex-col items-center justify-center p-4 rounded-3xl transition-all duration-300 hover:scale-[1.02] active:scale-95 border-2 shadow-sm"
+            [ngClass]="{
+              'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600':
+                table.status === 'available',
+              'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-500/20 hover:border-red-300 dark:hover:border-red-500/40':
+                table.status === 'occupied',
+              'bg-yellow-50 dark:bg-yellow-900/10 border-yellow-200 dark:border-yellow-500/20 hover:border-yellow-300 dark:hover:border-yellow-500/40':
+                table.status === 'reserved',
+              'bg-purple-50 dark:bg-purple-900/10 border-purple-200 dark:border-purple-500/20 hover:border-purple-300 dark:hover:border-purple-500/40':
+                table.status === 'cleaning',
+            }"
+          >
+            <!-- Status Indicator -->
+            <div
+              class="absolute top-4 right-4 size-3 rounded-full shadow-sm"
+              [ngClass]="{
+                'bg-green-500 shadow-green-500/50': table.status === 'available',
+                'bg-red-500 shadow-red-500/50': table.status === 'occupied',
+                'bg-yellow-500 shadow-yellow-500/50': table.status === 'reserved',
+                'bg-purple-500 shadow-purple-500/50': table.status === 'cleaning',
+              }"
+            ></div>
+
+            <!-- Table Icon & Capacity/Shape -->
+            <div
+              class="mb-3 text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors"
+            >
+              @if (table.capacity > 4) {
+                <span class="material-symbols-outlined text-[48px]">deck</span>
+              } @else {
+                <span class="material-symbols-outlined text-[48px]">table_bar</span>
+              }
+            </div>
+
+            <!-- Table Number -->
+            <h3 class="text-3xl font-black text-slate-900 dark:text-white tracking-tighter mb-1">
+              {{ table.table_number }}
+            </h3>
+
+            <!-- Status Text -->
+            <span
+              class="text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-md"
+              [ngClass]="{
+                'text-green-700 bg-green-100 dark:text-green-300 dark:bg-green-500/10':
+                  table.status === 'available',
+                'text-red-700 bg-red-100 dark:text-red-300 dark:bg-red-500/10':
+                  table.status === 'occupied',
+                'text-yellow-700 bg-yellow-100 dark:text-yellow-300 dark:bg-yellow-500/10':
+                  table.status === 'reserved',
+                'text-purple-700 bg-purple-100 dark:text-purple-300 dark:bg-purple-500/10':
+                  table.status === 'cleaning',
+              }"
+            >
+              {{
+                table.status === 'available'
+                  ? 'Disponible'
+                  : table.status === 'occupied'
+                    ? 'Ocupada'
+                    : table.status === 'reserved'
+                      ? 'Reservada'
+                      : 'Limpieza'
+              }}
+            </span>
+
+            <!-- QR Code Button -->
+            <button
+              (click)="$event.stopPropagation(); generateQR(table)"
+              class="absolute bottom-4 right-4 size-8 rounded-lg bg-slate-100 hover:bg-primary hover:text-white dark:bg-slate-700 text-slate-400 dark:text-slate-500 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100 shadow-sm"
+              title="Generar QR para Cliente"
+            >
+              <span class="material-symbols-outlined text-[18px]">qr_code_2</span>
+            </button>
+
+            <!-- Capacity Badge -->
+            <div
+              class="absolute bottom-4 left-4 flex items-center gap-1 text-xs font-semibold text-slate-400 dark:text-slate-500"
+            >
+              <span class="material-symbols-outlined text-[14px]">person</span>
+              {{ table.capacity }}
+            </div>
+          </button>
+        }
+      </div>
+    </div>
+  }
+</div>

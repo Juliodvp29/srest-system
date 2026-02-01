@@ -15,6 +15,23 @@ export class AlertComponent {
 
   close() {
     this.alertService.removeAlert(this.alert().id);
+    if (this.alert().isConfirm && this.alert().resolve) {
+      this.alert().resolve!(false);
+    }
+  }
+
+  onConfirm() {
+    if (this.alert().resolve) {
+      this.alert().resolve!(true);
+    }
+    this.alertService.removeAlert(this.alert().id);
+  }
+
+  onCancel() {
+    if (this.alert().resolve) {
+      this.alert().resolve!(false);
+    }
+    this.alertService.removeAlert(this.alert().id);
   }
 
   getIcon(): string {

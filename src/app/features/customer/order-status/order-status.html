@@ -1,1 +1,95 @@
-<p>order-status works!</p>
+<div class="min-h-screen bg-slate-50 flex flex-col">
+  <!-- Header -->
+  <header class="bg-white px-6 pt-12 pb-6 shadow-sm flex items-center gap-4 rounded-b-[2.5rem]">
+    <button
+      (click)="goBack()"
+      class="size-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-900 active:scale-90 transition-all"
+    >
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+    <div>
+      <h1 class="text-2xl font-black text-slate-900 tracking-tight">Estado del Pedido</h1>
+      <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">
+        Sigue tu orden en vivo
+      </p>
+    </div>
+  </header>
+
+  <main class="p-6 flex-1">
+    @if (isLoading()) {
+      <div class="h-64 flex flex-col items-center justify-center gap-4 text-slate-400">
+        <div
+          class="size-12 border-4 border-slate-200 border-t-primary rounded-full animate-spin"
+        ></div>
+      </div>
+    } @else {
+      <!-- Progress Tracker -->
+      <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 mb-6">
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">
+              Estado Actual
+            </p>
+            <h2 class="text-3xl font-black text-slate-900">{{ getStatusLabel() }}</h2>
+          </div>
+          <div
+            class="size-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center"
+          >
+            <span class="material-symbols-outlined text-4xl leading-none">
+              {{ order()?.status === 'delivered' ? 'done_all' : 'restaurant' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="relative h-4 bg-slate-100 rounded-full overflow-hidden mb-4">
+          <div
+            class="absolute inset-y-0 left-0 bg-primary transition-all duration-1000 ease-out rounded-full shadow-[0_0_15px_rgba(var(--primary-rgb),0.5)]"
+            [style.width.%]="getStatusProgress()"
+          ></div>
+        </div>
+
+        <div
+          class="flex justify-between text-[10px] font-black text-slate-400 uppercase tracking-widest px-1"
+        >
+          <span [class.text-primary]="getStatusProgress() >= 25">Pendiente</span>
+          <span [class.text-primary]="getStatusProgress() >= 50">Cocina</span>
+          <span [class.text-primary]="getStatusProgress() >= 75">Listo</span>
+          <span [class.text-primary]="getStatusProgress() >= 100">Entregado</span>
+        </div>
+      </div>
+
+      <!-- Order Items Detail -->
+      <div class="bg-white rounded-[2.5rem] p-6 shadow-sm border border-slate-100">
+        <h3 class="font-black text-slate-900 mb-4 flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">receipt_long</span>
+          Detalle del Pedido
+        </h3>
+        <div class="space-y-4">
+          @for (item of order()?.order_items; track item.id) {
+            <div
+              class="flex items-center justify-between py-2 border-b border-slate-50 last:border-0"
+            >
+              <div class="flex items-center gap-3">
+                <span
+                  class="size-7 rounded-lg bg-slate-100 flex items-center justify-center text-xs font-black text-slate-600"
+                >
+                  {{ item.quantity }}x
+                </span>
+                <span class="font-bold text-slate-700 text-sm">{{ item.product.name }}</span>
+              </div>
+              <span class="font-black text-slate-900 text-sm">{{ item.subtotal | currency }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <button
+        class="w-full mt-8 flex items-center justify-center gap-3 py-4 bg-slate-100 text-slate-600 rounded-2xl font-black active:scale-95 transition-all"
+      >
+        <span class="material-symbols-outlined">person_raised_hand</span>
+        Llamar al Mesero
+      </button>
+    }
+  </main>
+</div>

@@ -33,18 +33,6 @@
       }
     }
 
-    <p class="message" *ngIf="reason === 'inactive'">
-      Tu cuenta está inactiva. Por favor, contacta al administrador del sistema.
-    </p>
-
-    <p class="message" *ngIf="reason === 'insufficient-permissions'">
-      No tienes los permisos necesarios para acceder a esta página.
-    </p>
-
-    <p class="message" *ngIf="reason === 'unknown'">
-      No tienes autorización para acceder a este recurso.
-    </p>
-
     <div class="button-group">
       <button class="btn btn-secondary" (click)="goBack()">Volver</button>
       <button class="btn btn-primary" (click)="goToLogin()">Ir al Login</button>

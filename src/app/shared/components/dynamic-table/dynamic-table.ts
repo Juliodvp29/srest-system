@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { XlsxExportService } from '@app/core/services/xlsx-export.service';
+import { XlsxExportService } from '@app/core/services/xlsx-export';
 import { ExportDialog, ExportDialogOptions } from '../export-dialog/export-dialog';
 
 export interface ColumnConfig {

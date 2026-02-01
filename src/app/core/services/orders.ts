@@ -255,6 +255,23 @@ export class Orders {
       .subscribe();
   }
 
+  // Listen for changes on a single order
+  subscribeToOrder(orderId: string, callback: (payload: any) => void) {
+    return this.supabase.client
+      .channel(`order-${orderId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'orders',
+          filter: `id=eq.${orderId}`,
+        },
+        callback,
+      )
+      .subscribe();
+  }
+
   // Get daily stats
   async getDailyStats(branchId: string): Promise<{ totalSales: number; orderCount: number }> {
     const today = new Date().toISOString().split('T')[0];
@@ -266,7 +283,7 @@ export class Orders {
       .eq('branch_id', branchId)
       .gte('created_at', `${today}T00:00:00`)
       .lte('created_at', `${today}T23:59:59`)
-      .neq('status', 'cancelled');
+      .eq('status', 'delivered');
 
     if (error) throw error;
 

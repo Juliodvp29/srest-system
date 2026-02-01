@@ -7,7 +7,7 @@ import { Supabase } from './supabase';
 })
 export class Tables {
   private supabase = inject(Supabase);
-  constructor() { }
+  constructor() {}
 
   // Get tables by branch
   async getTablesByBranch(branchId: string): Promise<Table[]> {
@@ -68,7 +68,7 @@ export class Tables {
       .from('tables')
       .insert({
         ...table,
-        qr_code: qrCode
+        qr_code: qrCode,
       })
       .select()
       .single();
@@ -93,12 +93,9 @@ export class Tables {
   // Change table status
   async updateTableStatus(
     id: string,
-    status: 'available' | 'occupied' | 'reserved' | 'cleaning'
+    status: 'available' | 'occupied' | 'reserved' | 'cleaning',
   ): Promise<void> {
-    const { error } = await this.supabase.client
-      .from('tables')
-      .update({ status })
-      .eq('id', id);
+    const { error } = await this.supabase.client.from('tables').update({ status }).eq('id', id);
 
     if (error) throw error;
   }
@@ -113,6 +110,20 @@ export class Tables {
     await this.updateTableStatus(tableId, 'available');
   }
 
+  // Check and update table status based on active orders
+  async checkAndUpdateTableStatus(tableId: string): Promise<void> {
+    const { count, error } = await this.supabase.client
+      .from('orders')
+      .select('*', { count: 'exact', head: true })
+      .eq('table_id', tableId)
+      .in('status', ['pending', 'preparing', 'ready']);
+
+    if (error) throw error;
+
+    const newStatus = count && count > 0 ? 'occupied' : 'available';
+    await this.updateTableStatus(tableId, newStatus);
+  }
+
   // Mark table for cleaning
   async markTableForCleaning(tableId: string): Promise<void> {
     await this.updateTableStatus(tableId, 'cleaning');
@@ -120,10 +131,7 @@ export class Tables {
 
   // Delete table
   async deleteTable(id: string): Promise<void> {
-    const { error } = await this.supabase.client
-      .from('tables')
-      .delete()
-      .eq('id', id);
+    const { error } = await this.supabase.client.from('tables').delete().eq('id', id);
 
     if (error) throw error;
   }
@@ -132,7 +140,8 @@ export class Tables {
   async getActiveOrderByTable(tableId: string): Promise<any | null> {
     const { data, error } = await this.supabase.client
       .from('orders')
-      .select(`
+      .select(
+        `
         *,
         order_items(
           *,
@@ -142,7 +151,8 @@ export class Tables {
             price_adjustment
           )
         )
-      `)
+      `,
+      )
       .eq('table_id', tableId)
       .in('status', ['pending', 'preparing', 'ready'])
       .order('created_at', { ascending: false })
@@ -163,9 +173,9 @@ export class Tables {
           event: '*',
           schema: 'public',
           table: 'tables',
-          filter: `branch_id=eq.${branchId}`
+          filter: `branch_id=eq.${branchId}`,
         },
-        callback
+        callback,
       )
       .subscribe();
   }

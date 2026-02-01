@@ -1,1 +1,28 @@
-<p>order-confirmation works!</p>
+<div class="min-h-screen bg-white flex flex-col items-center justify-center p-8 text-center">
+  <div
+    class="size-32 rounded-[2.5rem] bg-emerald-50 text-emerald-500 flex items-center justify-center mb-8 animate-pulse-subtle"
+  >
+    <span class="material-symbols-outlined text-6xl">check_circle</span>
+  </div>
+
+  <h1 class="text-3xl font-black text-slate-900 mb-4 tracking-tight">¡Pedido Recibido!</h1>
+  <p class="text-slate-500 font-medium mb-12 leading-relaxed">
+    Tu orden ha sido enviada directamente a la cocina. Te avisaremos en cuanto esté lista para ser
+    servida.
+  </p>
+
+  <div class="w-full space-y-4">
+    <button
+      (click)="viewStatus()"
+      class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-lg shadow-xl shadow-slate-200 active:scale-[0.98] transition-all"
+    >
+      Ver Estado del Pedido
+    </button>
+    <button
+      (click)="viewStatus()"
+      class="w-full bg-white text-slate-400 py-3 rounded-2xl font-bold text-sm active:opacity-60 transition-all"
+    >
+      Volver al Menú
+    </button>
+  </div>
+</div>
