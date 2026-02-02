@@ -31,6 +31,8 @@
     "@angular/platform-browser": "^21.1.0",
     "@angular/router": "^21.1.0",
     "@supabase/supabase-js": "^2.91.1",
+    "apexcharts": "^5.3.6",
+    "ng-apexcharts": "^2.0.4",
     "rxjs": "~7.8.0",
     "supabase": "^2.72.8",
     "tslib": "^2.3.0",

@@ -1,0 +1,22 @@
+:host {
+  display: block;
+  min-height: 100%;
+}
+
+.chart-container {
+  margin: 0 -10px;
+}
+
+input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(0.5);
+  cursor: pointer;
+}
+
+.dark input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+/* Override ApexCharts internal padding if needed */
+::ng-deep .apexcharts-canvas {
+  margin: 0 auto;
+}

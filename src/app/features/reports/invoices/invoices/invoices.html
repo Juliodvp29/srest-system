@@ -1,1 +1,129 @@
-<p>invoices works!</p>
+<div class="p-6 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
+  <!-- Header & Filters -->
+  <header class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+    <div>
+      <h1 class="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+        Historial de Facturas
+      </h1>
+      <p class="text-slate-500 dark:text-slate-400 font-medium">
+        Consulta y gestiona todas las transacciones realizadas.
+      </p>
+    </div>
+
+    <div
+      class="flex flex-wrap items-center gap-4 bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700"
+    >
+      <div class="flex flex-col px-3 border-r border-slate-100 dark:border-white/10">
+        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Desde</label>
+        <input
+          type="date"
+          [(ngModel)]="startDate"
+          (change)="onFilterChange()"
+          class="bg-transparent border-none p-0 text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-0 cursor-pointer"
+        />
+      </div>
+      <div class="flex flex-col px-3 border-r border-slate-100 dark:border-white/10">
+        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Hasta</label>
+        <input
+          type="date"
+          [(ngModel)]="endDate"
+          (change)="onFilterChange()"
+          class="bg-transparent border-none p-0 text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-0 cursor-pointer"
+        />
+      </div>
+      <div class="flex-1 min-w-[200px] relative">
+        <span
+          class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl"
+          >search</span
+        >
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (input)="applyFilter()"
+          placeholder="Buscar factura o cliente..."
+          class="w-full bg-slate-50 dark:bg-white/5 border-none rounded-xl py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/20"
+        />
+      </div>
+    </div>
+  </header>
+
+  <!-- Invoices Table -->
+  <div
+    class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden"
+  >
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead
+          class="bg-slate-50 dark:bg-white/5 text-[10px] font-black uppercase tracking-widest text-slate-400"
+        >
+          <tr>
+            <th class="px-8 py-4">Factura #</th>
+            <th class="px-8 py-4">Fecha</th>
+            <th class="px-8 py-4">Cliente</th>
+            <th class="px-8 py-4">Mesero</th>
+            <th class="px-8 py-4">Método</th>
+            <th class="px-8 py-4">Estado</th>
+            <th class="px-8 py-4 text-right">Total</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 dark:divide-white/5">
+          @if (loading()) {
+            @for (i of [1, 2, 3, 4, 5]; track i) {
+              <tr class="animate-pulse">
+                <td colspan="7" class="px-8 py-6">
+                  <div class="h-4 bg-slate-100 dark:bg-white/5 rounded w-full"></div>
+                </td>
+              </tr>
+            }
+          } @else {
+            @for (inv of filteredInvoices(); track inv.id) {
+              <tr
+                class="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors group cursor-pointer"
+              >
+                <td class="px-8 py-5">
+                  <span class="font-black text-slate-900 dark:text-white"
+                    >#{{ inv.order_number }}</span
+                  >
+                </td>
+                <td class="px-8 py-5 text-sm text-slate-500">
+                  {{ inv.created_at | date: 'dd/MM/yyyy HH:mm' }}
+                </td>
+                <td class="px-8 py-5">
+                  <span class="font-bold text-slate-700 dark:text-slate-300">{{
+                    inv.customer_name || 'Consumidor Final'
+                  }}</span>
+                </td>
+                <td class="px-8 py-5 text-sm text-slate-500">
+                  {{ inv.waiter?.full_name || '-' }}
+                </td>
+                <td class="px-8 py-5">
+                  <span class="text-[10px] font-black uppercase text-slate-400">{{
+                    inv.payment_method || '-'
+                  }}</span>
+                </td>
+                <td class="px-8 py-5">
+                  <span
+                    class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider"
+                    [ngClass]="getStatusColor(inv.status)"
+                  >
+                    {{ getStatusLabel(inv.status) }}
+                  </span>
+                </td>
+                <td class="px-8 py-5 text-right font-black text-slate-900 dark:text-white">
+                  {{ inv.total | currency: 'CAD' : 'symbol-narrow' : '1.2-2' }}
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7" class="px-8 py-20 text-center text-slate-400">
+                  <span class="material-symbols-outlined text-4xl block mb-2">find_in_page</span>
+                  <p class="font-bold">No se encontraron facturas</p>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

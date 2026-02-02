@@ -15,6 +15,7 @@ export class MainLayout {
   isMobileMenuOpen = signal(false);
   isInventoryOpen = signal(false);
   isPosOpen = signal(false);
+  isReportsOpen = signal(false);
   currentUser = this.supabase.currentUser;
   userRole = this.supabase.userRole;
   userProfile = this.supabase.userProfile;

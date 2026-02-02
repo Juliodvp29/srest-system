@@ -12,7 +12,8 @@ export const REPORTS_ROUTES: Routes = [
     path: 'products',
     canActivate: [roleGuard],
     data: { roles: ['admin', 'manager'] },
-    loadComponent: () => import('./products/products-report/products-report').then((m) => m.ProductsReport),
+    loadComponent: () =>
+      import('./products/products-report/products-report').then((m) => m.ProductsReport),
   },
   {
     path: 'employees',
@@ -25,7 +26,7 @@ export const REPORTS_ROUTES: Routes = [
     path: 'invoices',
     canActivate: [roleGuard],
     data: { roles: ['admin', 'manager'] },
-    loadComponent: () => import('./invoices/invoices/invoices').then((m) => m.Invoices),
+    loadComponent: () => import('./invoices/invoices/invoices').then((m) => m.InvoicesReport),
   },
   {
     path: 'inventory',

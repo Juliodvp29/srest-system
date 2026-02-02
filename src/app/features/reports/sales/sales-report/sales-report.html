@@ -1,1 +1,173 @@
-<p>sales-report works!</p>
+<div class="p-6 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
+  <!-- Header & Filters -->
+  <header class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div>
+      <h1 class="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+        Reporte de Ventas
+      </h1>
+      <p class="text-slate-500 dark:text-slate-400 font-medium">
+        Analiza el rendimiento financiero de tu sucursal.
+      </p>
+    </div>
+
+    <div
+      class="flex items-center gap-3 bg-white dark:bg-slate-800 p-2 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700"
+    >
+      <div class="flex flex-col px-3">
+        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Desde</label>
+        <input
+          type="date"
+          [(ngModel)]="startDate"
+          (change)="onFilterChange()"
+          class="bg-transparent border-none p-0 text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-0 cursor-pointer"
+        />
+      </div>
+      <div class="w-px h-8 bg-slate-100 dark:bg-white/10"></div>
+      <div class="flex flex-col px-3">
+        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Hasta</label>
+        <input
+          type="date"
+          [(ngModel)]="endDate"
+          (change)="onFilterChange()"
+          class="bg-transparent border-none p-0 text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-0 cursor-pointer"
+        />
+      </div>
+    </div>
+  </header>
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- Today's Sales -->
+    <div
+      class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden relative"
+    >
+      <div class="flex items-center gap-4">
+        <div
+          class="size-12 rounded-2xl bg-cyan-100 dark:bg-cyan-500/10 flex items-center justify-center text-cyan-600 dark:text-cyan-400 z-10"
+        >
+          <span class="material-symbols-outlined text-2xl font-bold">today</span>
+        </div>
+        <div class="z-10">
+          <p class="text-sm font-bold text-slate-400">Ventas de Hoy</p>
+          <h3 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+            {{ todaySales() | currency: 'CAD' : 'symbol-narrow' : '1.0-0' }}
+          </h3>
+        </div>
+      </div>
+      <!-- Background Ornament -->
+      <div class="absolute -right-4 -bottom-4 opacity-5 z-0">
+        <span class="material-symbols-outlined text-8xl rotate-12">trending_up</span>
+      </div>
+    </div>
+
+    <!-- Total Sales -->
+    <div
+      class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700"
+    >
+      <div class="flex items-center gap-4 mb-4">
+        <div
+          class="size-12 rounded-2xl bg-emerald-100 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400"
+        >
+          <span class="material-symbols-outlined text-2xl font-bold">payments</span>
+        </div>
+        <div>
+          <p class="text-sm font-bold text-slate-400">Ventas Totales</p>
+          <h3 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+            {{ totalSales() | currency: 'CAD' : 'symbol-narrow' : '1.0-0' }}
+          </h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Count -->
+    <div
+      class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700"
+    >
+      <div class="flex items-center gap-4 mb-4">
+        <div
+          class="size-12 rounded-2xl bg-blue-100 dark:bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400"
+        >
+          <span class="material-symbols-outlined text-2xl font-bold">receipt_long</span>
+        </div>
+        <div>
+          <p class="text-sm font-bold text-slate-400">Órdenes</p>
+          <h3 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+            {{ orderCount() }}
+          </h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- Average Ticket -->
+    <div
+      class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700"
+    >
+      <div class="flex items-center gap-4 mb-4">
+        <div
+          class="size-12 rounded-2xl bg-purple-100 dark:bg-purple-500/10 flex items-center justify-center text-purple-600 dark:text-purple-400"
+        >
+          <span class="material-symbols-outlined text-2xl font-bold">confirmation_number</span>
+        </div>
+        <div>
+          <p class="text-sm font-bold text-slate-400">Ticket Promedio</p>
+          <h3 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+            {{ avgTicket() | currency: 'CAD' : 'symbol-narrow' : '1.0-0' }}
+          </h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Chart -->
+  <div
+    class="bg-white dark:bg-slate-800 p-8 rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-700"
+  >
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Tendencia de Ingresos</h3>
+        <p class="text-sm text-slate-500 font-medium">
+          Evolución de ventas en el periodo seleccionado
+        </p>
+      </div>
+
+      <button
+        class="flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-white/5 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 transition-colors"
+      >
+        <span class="material-symbols-outlined text-lg">download</span>
+        Exportar CSV
+      </button>
+    </div>
+
+    @if (loading()) {
+      <div
+        class="h-[350px] w-full bg-slate-50 dark:bg-white/5 rounded-2xl animate-pulse flex items-center justify-center"
+      >
+        <span class="text-slate-400 font-bold">Cargando datos...</span>
+      </div>
+    } @else {
+      @if (
+        chartOptions.series &&
+        chartOptions.series.length > 0 &&
+        chartOptions.series[0].data.length > 0
+      ) {
+        <div id="chart" class="chart-container">
+          <apx-chart
+            [series]="chartOptions.series!"
+            [chart]="chartOptions.chart!"
+            [xaxis]="chartOptions.xaxis!"
+            [stroke]="chartOptions.stroke!"
+            [tooltip]="chartOptions.tooltip!"
+            [dataLabels]="chartOptions.dataLabels!"
+            [grid]="chartOptions.grid!"
+            [theme]="chartOptions.theme!"
+          ></apx-chart>
+        </div>
+      } @else {
+        <div class="h-[350px] flex flex-col items-center justify-center text-slate-400 gap-4">
+          <span class="material-symbols-outlined text-6xl opacity-20">analytics</span>
+          <p class="font-bold">No hay datos de ventas para este periodo</p>
+        </div>
+      }
+    }
+  </div>
+</div>

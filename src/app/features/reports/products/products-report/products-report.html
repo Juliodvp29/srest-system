@@ -1,1 +1,140 @@
-<p>products-report works!</p>
+<div class="p-6 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
+  <!-- Header & Filters -->
+  <header class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div>
+      <h1 class="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+        Rendimiento de Productos
+      </h1>
+      <p class="text-slate-500 dark:text-slate-400 font-medium">
+        Identifica tus platos estrella y optimiza tu menú.
+      </p>
+    </div>
+
+    <div
+      class="flex items-center gap-3 bg-white dark:bg-slate-800 p-2 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700"
+    >
+      <div class="flex flex-col px-3">
+        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Desde</label>
+        <input
+          type="date"
+          [(ngModel)]="startDate"
+          (change)="onFilterChange()"
+          class="bg-transparent border-none p-0 text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-0 cursor-pointer"
+        />
+      </div>
+      <div class="w-px h-8 bg-slate-100 dark:bg-white/10"></div>
+      <div class="flex flex-col px-3">
+        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Hasta</label>
+        <input
+          type="date"
+          [(ngModel)]="endDate"
+          (change)="onFilterChange()"
+          class="bg-transparent border-none p-0 text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-0 cursor-pointer"
+        />
+      </div>
+    </div>
+  </header>
+
+  <!-- Content Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Bar Chart: Top Sales -->
+    <div
+      class="bg-white dark:bg-slate-800 p-8 rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-700"
+    >
+      <div class="mb-8">
+        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Top 10 por Ingresos</h3>
+        <p class="text-sm text-slate-500 font-medium">Los productos que generan más valor</p>
+      </div>
+
+      @if (loading()) {
+        <div class="h-[350px] w-full bg-slate-50 dark:bg-white/5 rounded-2xl animate-pulse"></div>
+      } @else {
+        @if (topProducts().length > 0) {
+          <apx-chart
+            [series]="barChartOptions.series!"
+            [chart]="barChartOptions.chart!"
+            [dataLabels]="barChartOptions.dataLabels!"
+            [plotOptions]="barChartOptions.plotOptions!"
+            [xaxis]="barChartOptions.xaxis!"
+            [colors]="barChartOptions.colors!"
+            [tooltip]="barChartOptions.tooltip!"
+          ></apx-chart>
+        } @else {
+          <div class="h-[350px] flex items-center justify-center text-slate-400">Sin datos</div>
+        }
+      }
+    </div>
+
+    <!-- Pie Chart: Quantity Mix -->
+    <div
+      class="bg-white dark:bg-slate-800 p-8 rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-700"
+    >
+      <div class="mb-8">
+        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Mix de Ventas (Cantidad)</h3>
+        <p class="text-sm text-slate-500 font-medium">
+          Distribución de los top 5 productos más pedidos
+        </p>
+      </div>
+
+      @if (loading()) {
+        <div class="h-[350px] w-full bg-slate-50 dark:bg-white/5 rounded-2xl animate-pulse"></div>
+      } @else {
+        @if (topProducts().length > 0) {
+          <apx-chart
+            [series]="pieChartOptions.series!"
+            [chart]="pieChartOptions.chart!"
+            [labels]="pieChartOptions.labels!"
+            [colors]="pieChartOptions.colors!"
+            [legend]="pieChartOptions.legend!"
+            [responsive]="pieChartOptions.responsive!"
+          ></apx-chart>
+        } @else {
+          <div class="h-[350px] flex items-center justify-center text-slate-400">Sin datos</div>
+        }
+      }
+    </div>
+  </div>
+
+  <!-- Detailed Table -->
+  <div
+    class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden"
+  >
+    <div
+      class="p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center"
+    >
+      <h3 class="text-xl font-bold text-slate-900 dark:text-white">Desglose Detallado</h3>
+      <button class="text-sm font-bold text-primary hover:underline">Ver todo el menú</button>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead
+          class="bg-slate-50 dark:bg-white/5 text-[10px] font-black uppercase tracking-widest text-slate-400"
+        >
+          <tr>
+            <th class="px-8 py-4">Producto</th>
+            <th class="px-8 py-4">Cantidad</th>
+            <th class="px-8 py-4">Total Ventas</th>
+            <th class="px-8 py-4">Ticket Promedio</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 dark:divide-white/5">
+          @for (prod of topProducts(); track prod.name) {
+            <tr class="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors group">
+              <td class="px-8 py-5 font-bold text-slate-900 dark:text-white">{{ prod.name }}</td>
+              <td class="px-8 py-5 font-medium text-slate-600 dark:text-slate-400">
+                {{ prod.quantity }}
+              </td>
+              <td class="px-8 py-5 font-black text-slate-900 dark:text-white">
+                {{ prod.total | currency: 'CAD' : 'symbol-narrow' : '1.0-0' }}
+              </td>
+              <td class="px-8 py-5 text-sm text-slate-500">
+                {{ prod.total / prod.quantity | currency: 'CAD' : 'symbol-narrow' : '1.0-0' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

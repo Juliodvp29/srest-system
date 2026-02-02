@@ -1,0 +1,17 @@
+:host {
+  display: block;
+  min-height: 100%;
+}
+
+input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(0.5);
+  cursor: pointer;
+}
+
+.dark input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+table th {
+  border-bottom: 2px solid transparent;
+}
