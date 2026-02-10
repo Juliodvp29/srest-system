@@ -1,1 +1,101 @@
-<p>orders-board works!</p>
+<div class="h-full flex flex-col gap-4">
+    <!-- Header -->
+    <div class="flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined">soup_kitchen</span>
+            </div>
+            <div>
+                <h1 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Cocina</h1>
+                <p class="text-sm font-medium text-slate-500 dark:text-sage/60">
+                    {{ orders().length }} pedidos activos
+                </p>
+            </div>
+        </div>
+        <button (click)="refresh()"
+            class="size-10 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 flex items-center justify-center text-slate-400 dark:text-sage/40 transition-colors">
+            <span class="material-symbols-outlined">refresh</span>
+        </button>
+    </div>
+
+    <!-- Kanban Board -->
+    <div class="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-0 overflow-hidden">
+        <!-- Pending Column -->
+        <div
+            class="flex flex-col bg-white dark:bg-background-dark border border-slate-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-sm">
+            <div class="p-4 border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="size-2.5 rounded-full bg-orange-400"></div>
+                    <h3 class="font-bold text-sm text-slate-900 dark:text-white">Pendientes</h3>
+                </div>
+                <span
+                    class="px-2 py-0.5 rounded-full text-[10px] font-black bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400">
+                    {{ pendingOrders().length }}
+                </span>
+            </div>
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-3">
+                @for (order of pendingOrders(); track order.id) {
+                <app-order-card [order]="order" (statusChange)="onStatusChange($event)"
+                    (viewDetail)="viewOrderDetail($event)" />
+                } @empty {
+                <div class="h-32 flex flex-col items-center justify-center text-slate-400 dark:text-sage/40">
+                    <span class="material-symbols-outlined text-3xl mb-2 opacity-50">check_circle</span>
+                    <p class="text-xs font-medium">Sin pedidos pendientes</p>
+                </div>
+                }
+            </div>
+        </div>
+
+        <!-- Preparing Column -->
+        <div
+            class="flex flex-col bg-white dark:bg-background-dark border border-slate-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-sm">
+            <div class="p-4 border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="size-2.5 rounded-full bg-blue-400"></div>
+                    <h3 class="font-bold text-sm text-slate-900 dark:text-white">En Preparación</h3>
+                </div>
+                <span
+                    class="px-2 py-0.5 rounded-full text-[10px] font-black bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400">
+                    {{ preparingOrders().length }}
+                </span>
+            </div>
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-3">
+                @for (order of preparingOrders(); track order.id) {
+                <app-order-card [order]="order" (statusChange)="onStatusChange($event)"
+                    (viewDetail)="viewOrderDetail($event)" />
+                } @empty {
+                <div class="h-32 flex flex-col items-center justify-center text-slate-400 dark:text-sage/40">
+                    <span class="material-symbols-outlined text-3xl mb-2 opacity-50">skillet</span>
+                    <p class="text-xs font-medium">Nada en preparación</p>
+                </div>
+                }
+            </div>
+        </div>
+
+        <!-- Ready Column -->
+        <div
+            class="flex flex-col bg-white dark:bg-background-dark border border-slate-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-sm">
+            <div class="p-4 border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="size-2.5 rounded-full bg-green-400"></div>
+                    <h3 class="font-bold text-sm text-slate-900 dark:text-white">Listos</h3>
+                </div>
+                <span
+                    class="px-2 py-0.5 rounded-full text-[10px] font-black bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400">
+                    {{ readyOrders().length }}
+                </span>
+            </div>
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-3">
+                @for (order of readyOrders(); track order.id) {
+                <app-order-card [order]="order" (statusChange)="onStatusChange($event)"
+                    (viewDetail)="viewOrderDetail($event)" />
+                } @empty {
+                <div class="h-32 flex flex-col items-center justify-center text-slate-400 dark:text-sage/40">
+                    <span class="material-symbols-outlined text-3xl mb-2 opacity-50">done_all</span>
+                    <p class="text-xs font-medium">Sin pedidos listos</p>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

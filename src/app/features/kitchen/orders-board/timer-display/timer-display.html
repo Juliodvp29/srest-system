@@ -1,1 +1,7 @@
-<p>timer-display works!</p>
+<div
+  [class]="'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold ' + urgencyBg() + ' ' + urgencyColor()"
+  [class.animate-pulse]="urgencyLevel() === 'critical'"
+>
+  <span class="material-symbols-outlined text-[14px]">timer</span>
+  <span>{{ elapsedFormatted() }}</span>
+</div>

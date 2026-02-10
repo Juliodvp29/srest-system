@@ -1,1 +1,144 @@
-<p>orders-detail works!</p>
+@if (loading()) {
+<!-- Loading State -->
+<div class="h-full flex items-center justify-center">
+    <div class="flex flex-col items-center gap-3 text-slate-400 dark:text-sage/40">
+        <span class="material-symbols-outlined text-4xl animate-spin">progress_activity</span>
+        <p class="text-sm font-medium">Cargando pedido...</p>
+    </div>
+</div>
+} @else if (order(); as order) {
+<div class="h-full flex flex-col gap-4">
+    <!-- Header -->
+    <div class="flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center gap-3">
+            <button (click)="goBack()"
+                class="size-10 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 flex items-center justify-center text-slate-600 dark:text-sage transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h1 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                        Orden {{ order.order_number }}
+                    </h1>
+                    <span [class]="
+                'px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide ' +
+                (badgeColors[order.status] || 'bg-slate-100 text-slate-500')
+              ">
+                        {{ statusLabels[order.status] || order.status }}
+                    </span>
+                </div>
+                <p class="text-sm font-medium text-slate-500 dark:text-sage/60">
+                    Detalle del pedido para cocina
+                </p>
+            </div>
+        </div>
+        <app-timer-display [createdAt]="order.created_at" />
+    </div>
+
+    <!-- Content -->
+    <div class="flex-1 overflow-y-auto custom-scrollbar space-y-4 min-h-0">
+        <!-- Order Info Card -->
+        <div
+            class="bg-white dark:bg-background-dark border border-slate-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-sm">
+            <div class="p-5">
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px] text-primary">info</span>
+                    Información del Pedido
+                </h3>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <!-- Table -->
+                    <div class="flex flex-col gap-1">
+                        <span
+                            class="text-[10px] font-bold text-slate-400 dark:text-sage/40 uppercase tracking-wider">Mesa</span>
+                        <span class="text-sm font-bold text-slate-900 dark:text-white">
+                            {{ order.table?.table_number || 'Sin mesa' }}
+                        </span>
+                    </div>
+
+                    <!-- Waiter -->
+                    <div class="flex flex-col gap-1">
+                        <span
+                            class="text-[10px] font-bold text-slate-400 dark:text-sage/40 uppercase tracking-wider">Mesero</span>
+                        <span class="text-sm font-bold text-slate-900 dark:text-white">
+                            {{ order.waiter?.full_name || 'Sin mesero' }}
+                        </span>
+                    </div>
+
+                    <!-- Order Type -->
+                    <div class="flex flex-col gap-1">
+                        <span
+                            class="text-[10px] font-bold text-slate-400 dark:text-sage/40 uppercase tracking-wider">Tipo</span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px] text-primary">{{
+                                orderTypeIcons[order.order_type] || 'restaurant'
+                                }}</span>
+                            <span class="text-sm font-bold text-slate-900 dark:text-white">
+                                {{ orderTypeLabels[order.order_type] || order.order_type }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Customer -->
+                    <div class="flex flex-col gap-1">
+                        <span
+                            class="text-[10px] font-bold text-slate-400 dark:text-sage/40 uppercase tracking-wider">Cliente</span>
+                        <span class="text-sm font-bold text-slate-900 dark:text-white">
+                            {{ order.customer_name || 'General' }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notes -->
+        @if (order.notes) {
+        <div
+            class="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-2xl">
+            <span class="material-symbols-outlined text-amber-500 dark:text-amber-400 shrink-0">sticky_note_2</span>
+            <div>
+                <h4 class="text-sm font-bold text-amber-700 dark:text-amber-400 mb-1">Notas del Pedido</h4>
+                <p class="text-sm text-amber-600 dark:text-amber-300/80">{{ order.notes }}</p>
+            </div>
+        </div>
+        }
+
+        <!-- Items Checklist -->
+        <div
+            class="bg-white dark:bg-background-dark border border-slate-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-sm">
+            <div class="p-5">
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px] text-primary">checklist</span>
+                    Items del Pedido
+                </h3>
+                <app-item-checklist [items]="items()" (itemStatusChange)="onItemStatusChange($event)" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Footer -->
+    @if (actions().length) {
+    <div class="flex-shrink-0 flex items-center gap-3 pt-2">
+        @for (action of actions(); track action.status) {
+        <button (click)="updateOrderStatus(action.status)" [class]="
+              'flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-2xl text-sm font-bold transition-all active:scale-[0.98] shadow-sm ' +
+              action.color
+            ">
+            <span class="material-symbols-outlined text-[20px]">{{ action.icon }}</span>
+            {{ action.label }}
+        </button>
+        }
+    </div>
+    }
+</div>
+} @else {
+<!-- Not Found -->
+<div class="h-full flex flex-col items-center justify-center gap-3 text-slate-400 dark:text-sage/40">
+    <span class="material-symbols-outlined text-5xl opacity-50">search_off</span>
+    <p class="text-sm font-medium">Pedido no encontrado</p>
+    <button (click)="goBack()"
+        class="mt-2 px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-colors">
+        Volver al tablero
+    </button>
+</div>
+}
