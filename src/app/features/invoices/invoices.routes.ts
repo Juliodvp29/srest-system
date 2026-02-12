@@ -9,13 +9,7 @@ export const INVOICES_ROUTES: Routes = [
     loadComponent: () =>
       import('./invoices-list/invoices-list/invoices-list').then((m) => m.InvoicesList),
   },
-  {
-    path: 'create/:orderId',
-    canActivate: [roleGuard],
-    data: { roles: ['admin', 'manager', 'cashier'] },
-    loadComponent: () =>
-      import('./create-invoice/create-invoice/create-invoice').then((m) => m.CreateInvoice),
-  },
+
   {
     path: 'detail/:invoiceId',
     canActivate: [roleGuard],
