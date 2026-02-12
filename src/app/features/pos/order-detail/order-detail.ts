@@ -1,8 +1,10 @@
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService } from '@app/core/services/alert';
+import { Employee, Employees } from '@app/core/services/employees';
 import { Orders } from '@app/core/services/orders';
+import { Supabase } from '@app/core/services/supabase';
 import { Tables } from '@app/core/services/tables';
 
 @Component({
@@ -18,11 +20,19 @@ export class OrderDetail implements OnInit {
   private ordersService = inject(Orders);
   private tablesService = inject(Tables);
   private alertService = inject(AlertService);
+  private employeesService = inject(Employees);
+  private supabase = inject(Supabase);
+  private elRef = inject(ElementRef);
 
   orderId = signal<string>('');
   order = signal<any>(null);
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
+
+  // Waiter selector
+  waiters = signal<Employee[]>([]);
+  showWaiterSelector = signal(false);
+  assigningWaiter = signal(false);
 
   // Subscriptions
   private orderSub: any;
@@ -107,6 +117,54 @@ export class OrderDetail implements OnInit {
     } catch (err) {
       console.error('Error cancelling order:', err);
       this.alertService.error('Error', 'No se pudo cancelar el pedido.');
+    }
+  }
+
+  async loadWaiters() {
+    try {
+      const branchId = this.supabase.userProfile()?.branch_id || '';
+      if (branchId) {
+        const waiters = await this.employeesService.getEmployeesByRole(branchId, 'waiter');
+        this.waiters.set(waiters);
+      }
+    } catch (err) {
+      console.error('Error loading waiters:', err);
+    }
+  }
+
+  async toggleWaiterSelector() {
+    if (!this.showWaiterSelector()) {
+      await this.loadWaiters();
+    }
+    this.showWaiterSelector.update((v) => !v);
+  }
+
+  async assignWaiter(waiterId: string | null) {
+    const orderId = this.orderId();
+    if (!orderId) return;
+
+    this.assigningWaiter.set(true);
+    try {
+      await this.ordersService.assignWaiter(orderId, waiterId);
+      await this.loadOrder(orderId);
+      this.showWaiterSelector.set(false);
+      this.alertService.success(
+        'Mesero Asignado',
+        waiterId ? 'El mesero fue asignado correctamente.' : 'Se quitó el mesero de la orden.',
+      );
+    } catch (err) {
+      console.error('Error assigning waiter:', err);
+      this.alertService.error('Error', 'No se pudo asignar el mesero.');
+    } finally {
+      this.assigningWaiter.set(false);
+    }
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.waiter-selector-container')) {
+      this.showWaiterSelector.set(false);
     }
   }
 

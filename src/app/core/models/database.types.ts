@@ -149,4 +149,5 @@ export interface Invoice {
     created_at: string;
     sent_at?: string;
     accepted_at?: string;
+    order?: Order;
 }

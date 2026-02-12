@@ -1,1 +1,163 @@
-<p>invoice-detail works!</p>
+<div class="h-full flex flex-col bg-slate-50 dark:bg-slate-900 overflow-hidden">
+    @if (loading()) {
+    <div class="flex-1 flex items-center justify-center">
+        <div class="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+    </div>
+    } @else {
+    <!-- Header -->
+    <header
+        class="p-6 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm z-10 sticky top-0">
+        <div class="flex items-center gap-4">
+            <button (click)="goBack()"
+                class="p-2 -ml-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <div class="flex-1">
+                <div class="flex items-center gap-3">
+                    <h1 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                        Factura {{ invoice()?.invoice_number }}
+                    </h1>
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide"
+                        [ngClass]="getStatusColor(invoice()?.status)">
+                        {{ getStatusLabel(invoice()?.status) }}
+                    </span>
+                </div>
+                <p class="text-sm text-slate-500 dark:text-slate-400">
+                    Emitida el {{ invoice()?.created_at | date:'medium' }}
+                </p>
+            </div>
+
+            <div class="flex gap-2">
+                <button (click)="printInvoice()"
+                    class="px-4 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-700 dark:text-white font-medium hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">print</span>
+                    <span>Imprimir</span>
+                </button>
+
+                @if (invoice()?.status !== 'cancelled' && invoice()?.status !== 'rejected') {
+                <button (click)="cancelInvoice()"
+                    class="px-4 py-2 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20 rounded-lg text-red-600 dark:text-red-400 font-medium hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">cancel</span>
+                    <span>Anular</span>
+                </button>
+                }
+            </div>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <div class="flex-1 overflow-auto p-4 md:p-6">
+        <div class="max-w-4xl mx-auto space-y-6">
+
+            <!-- Customer Info -->
+            <div
+                class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+                <h3
+                    class="text-lg font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-3 mb-4">
+                    Datos del Cliente
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
+                    <div>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-1">Cliente</p>
+                        <p class="font-medium text-slate-900 dark:text-white">{{ invoice()?.customer_name }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-1">NIT / Cédula</p>
+                        <p class="font-medium text-slate-900 dark:text-white">{{ invoice()?.customer_nit || 'N/A' }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-1">Email</p>
+                        <p class="font-medium text-slate-900 dark:text-white">{{ invoice()?.customer_email || 'N/A' }}
+                        </p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-1">Dirección</p>
+                        <p class="font-medium text-slate-900 dark:text-white">{{ invoice()?.customer_address || 'N/A' }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items Table -->
+            <div
+                class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div class="p-6 border-b border-slate-100 dark:border-slate-700">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Detalle de Productos</h3>
+                    @if (invoice()?.order?.order_number) {
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                        Ref. Orden: {{ invoice()?.order?.order_number }}
+                    </p>
+                    }
+                </div>
+
+                <table class="w-full">
+                    <thead class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700">
+                        <tr>
+                            <th class="text-left py-3 px-6 font-semibold text-slate-500 dark:text-slate-400 text-sm">
+                                Producto</th>
+                            <th class="text-right py-3 px-6 font-semibold text-slate-500 dark:text-slate-400 text-sm">
+                                Cant.</th>
+                            <th class="text-right py-3 px-6 font-semibold text-slate-500 dark:text-slate-400 text-sm">
+                                Precio Unit.</th>
+                            <th class="text-right py-3 px-6 font-semibold text-slate-500 dark:text-slate-400 text-sm">
+                                Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                        @for (item of invoice()?.order?.order_items; track item.id) {
+                        <tr>
+                            <td class="py-4 px-6">
+                                <div class="font-medium text-slate-900 dark:text-white">{{ item.product?.name }}</div>
+                                @if (item.order_item_modifiers?.length) {
+                                <div class="text-xs text-slate-500 mt-0.5">
+                                    @for (mod of item.order_item_modifiers; track mod.id) {
+                                    <span>+ {{ mod.modifier_name }} </span>
+                                    }
+                                </div>
+                                }
+                            </td>
+                            <td class="py-4 px-6 text-right text-slate-700 dark:text-slate-300">{{ item.quantity }}</td>
+                            <td class="py-4 px-6 text-right text-slate-700 dark:text-slate-300">
+                                {{ item.unit_price | currency:'CAD':'symbol-narrow':'1.0-0' }}
+                            </td>
+                            <td class="py-4 px-6 text-right font-medium text-slate-900 dark:text-white">
+                                {{ item.subtotal | currency:'CAD':'symbol-narrow':'1.0-0' }}
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                    <tfoot class="bg-slate-50 dark:bg-slate-900/50">
+                        <tr>
+                            <td colspan="3" class="py-3 px-6 text-right text-slate-500 dark:text-slate-400">Subtotal
+                            </td>
+                            <td class="py-3 px-6 text-right font-medium text-slate-900 dark:text-white">
+                                {{ invoice()?.subtotal | currency:'CAD':'symbol-narrow':'1.0-0' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="py-3 px-6 text-right text-slate-500 dark:text-slate-400">Impuestos
+                                (19%)</td>
+                            <td class="py-3 px-6 text-right font-medium text-slate-900 dark:text-white">
+                                {{ invoice()?.tax | currency:'CAD':'symbol-narrow':'1.0-0' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3"
+                                class="py-4 px-6 text-right font-bold text-slate-900 dark:text-white text-lg">Total</td>
+                            <td class="py-4 px-6 text-right font-bold text-slate-900 dark:text-white text-lg">
+                                {{ invoice()?.total | currency:'CAD':'symbol-narrow':'1.0-0' }}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- Footer info mock -->
+            <div class="text-center text-xs text-slate-400 dark:text-slate-500 pt-4">
+                <p>Resolución DIAN No. 18760000001 de 2024-01-01</p>
+                <p class="mt-1">CUFE: {{ invoice()?.cufe || 'Pendiente de generación' }}</p>
+            </div>
+        </div>
+    </div>
+    }
+</div>

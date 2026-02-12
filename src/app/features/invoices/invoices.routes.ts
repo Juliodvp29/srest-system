@@ -31,6 +31,13 @@ export const INVOICES_ROUTES: Routes = [
       import('./print-invoice/print-invoice/print-invoice').then((m) => m.PrintInvoice),
   },
   {
+    path: 'ticket/:id',
+    canActivate: [roleGuard],
+    data: { roles: ['admin', 'manager', 'cashier'] },
+    loadComponent: () =>
+      import('./ticket-invoice/ticket-invoice').then((m) => m.TicketInvoice),
+  },
+  {
     path: '',
     redirectTo: 'list',
     pathMatch: 'full',

@@ -1,0 +1,30 @@
+@media print {
+    @page {
+        margin: 0;
+        size: auto;
+    }
+
+    body * {
+        visibility: hidden;
+    }
+
+    app-print-invoice,
+    app-print-invoice * {
+        visibility: visible;
+    }
+
+    app-print-invoice {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+
+    .print\:hidden {
+        display: none !important;
+    }
+}
+
+.print-container {
+    font-family: 'Courier New', Courier, monospace;
+}

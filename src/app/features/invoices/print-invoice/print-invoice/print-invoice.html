@@ -1,1 +1,95 @@
-<p>print-invoice works!</p>
+<!-- Print Layout -->
+@if (invoice(); as inv) {
+<div class="print-container p-8 max-w-[800px] mx-auto bg-white text-black font-mono text-sm">
+
+    <!-- Header -->
+    <div class="text-center mb-6">
+        <h1 class="text-xl font-bold uppercase mb-1">Restaurante SREST</h1>
+        <p>NIT: 900.123.456-7</p>
+        <p>Calle 123 # 45-67, Bogotá</p>
+        <p>Tel: (601) 123 4567</p>
+        <div class="border-t border-black border-dashed my-2"></div>
+        <div class="flex justify-between font-bold">
+            <span>FACTURA ELECTRÓNICA</span>
+            <span>{{ inv.invoice_number }}</span>
+        </div>
+    </div>
+
+    <!-- Customer -->
+    <div class="mb-4">
+        <p><strong>Fecha:</strong> {{ inv.created_at | date:'medium' }}</p>
+        <p><strong>Cliente:</strong> {{ inv.customer_name }}</p>
+        <p><strong>NIT/CC:</strong> {{ inv.customer_nit || 'N/A' }}</p>
+        @if (inv.customer_address) {
+        <p><strong>Dir:</strong> {{ inv.customer_address }}</p>
+        }
+    </div>
+
+    <!-- Items -->
+    <table class="w-full mb-4">
+        <thead class="border-b border-black">
+            <tr>
+                <th class="text-left py-1">Cant</th>
+                <th class="text-left py-1">Desc</th>
+                <th class="text-right py-1">V.Unit</th>
+                <th class="text-right py-1">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (item of inv.order?.order_items; track item.id) {
+            <tr>
+                <td class="py-1 align-top">{{ item.quantity }}</td>
+                <td class="py-1 align-top">
+                    {{ item.product?.name }}
+                    @if (item.order_item_modifiers?.length) {
+                    <div class="text-xs italic pl-1">
+                        @for (mod of item.order_item_modifiers; track mod.id) {
+                        + {{ mod.modifier_name }} <br />
+                        }
+                    </div>
+                    }
+                </td>
+                <td class="py-1 align-top text-right">{{ item.unit_price | currency:'CAD':'':'1.0-0' }}</td>
+                <td class="py-1 align-top text-right">{{ item.subtotal | currency:'CAD':'':'1.0-0' }}</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Totals -->
+    <div class="flex justify-end mb-6">
+        <div class="w-48 space-y-1">
+            <div class="flex justify-between">
+                <span>Subtotal:</span>
+                <span>{{ inv.subtotal | currency:'CAD':'symbol-narrow':'1.0-0' }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span>Impuestos (19%):</span>
+                <span>{{ inv.tax | currency:'CAD':'symbol-narrow':'1.0-0' }}</span>
+            </div>
+            <div class="flex justify-between font-bold text-lg border-t border-black pt-1">
+                <span>TOTAL:</span>
+                <span>{{ inv.total | currency:'CAD':'symbol-narrow':'1.0-0' }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center text-xs mt-8">
+        <p>Autorización Facturación Electrónica DIAN</p>
+        <p>No. 18760000001 de 2024-01-01</p>
+        <p>Vigencia: 24 Meses</p>
+        <p>Rango: FAC-000001 a FAC-999999</p>
+        <br />
+        <p><strong>CUFE:</strong></p>
+        <p class="break-all text-[10px]">{{ inv.cufe || 'Pendiente de generación' }}</p>
+        <br />
+        <p>Impreso por Software SREST</p>
+    </div>
+</div>
+}
+
+<!-- No-print controls -->
+<div class="fixed top-4 right-4 print:hidden flex gap-2">
+    <button (click)="close()" class="px-4 py-2 bg-slate-800 text-white rounded shadow">Cerrar</button>
+</div>

@@ -1,0 +1,92 @@
+@if (invoice(); as inv) {
+<div class="ticket-container">
+    <!-- Header -->
+    <div class="text-center mb-4">
+        <h2 class="font-bold text-lg uppercase">Restaurante SREST</h2>
+        <p class="text-xs">NIT: 900.123.456-7</p>
+        <p class="text-xs">Calle 123 # 45-67, Bogotá</p>
+        <p class="text-xs">Tel: (601) 123 4567</p>
+    </div>
+
+    <div class="border-b border-dashed border-black mb-2"></div>
+
+    <!-- Info -->
+    <div class="mb-4 text-xs">
+        <div class="flex justify-between">
+            <span class="font-bold">Factura de Venta:</span>
+            <span>{{ inv.invoice_number }}</span>
+        </div>
+        <div class="flex justify-between">
+            <span>Fecha:</span>
+            <span>{{ inv.created_at | date : 'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        <div class="flex justify-between">
+            <span>Cliente:</span>
+            <span>{{ inv.customer_name }}</span>
+        </div>
+        @if (inv.customer_nit) {
+        <div class="flex justify-between">
+            <span>NIT/CC:</span>
+            <span>{{ inv.customer_nit }}</span>
+        </div>
+        }
+    </div>
+
+    <div class="border-b border-dashed border-black mb-2"></div>
+
+    <!-- Items -->
+    <div class="mb-4 text-xs">
+        <div class="flex font-bold mb-1">
+            <span class="w-8">Cant</span>
+            <span class="flex-1">Desc</span>
+            <span class="w-16 text-right">Total</span>
+        </div>
+
+        @if (inv.order?.order_items) {
+        @for (item of inv.order.order_items; track item.id) {
+        <div class="flex mb-1">
+            <span class="w-8">{{ item.quantity }}</span>
+            <span class="flex-1">{{ item.product?.name }}</span>
+            <span class="w-16 text-right">{{ item.subtotal | currency : 'CAD' : 'symbol-narrow' : '1.0-0' }}</span>
+        </div>
+        }
+        }
+    </div>
+
+    <div class="border-b border-dashed border-black mb-2"></div>
+
+    <!-- Totals -->
+    <div class="mb-4 text-xs">
+        <div class="flex justify-between">
+            <span>Subtotal:</span>
+            <span>{{ inv.subtotal | currency : 'CAD' : 'symbol-narrow' : '1.0-0' }}</span>
+        </div>
+        <div class="flex justify-between">
+            <span>Impuestos (19%):</span>
+            <span>{{ inv.tax | currency : 'CAD' : 'symbol-narrow' : '1.0-0' }}</span>
+        </div>
+        @if (inv.order?.tip > 0) {
+        <div class="flex justify-between">
+            <span>Propina:</span>
+            <span>{{ inv.order.tip | currency : 'CAD' : 'symbol-narrow' : '1.0-0' }}</span>
+        </div>
+        }
+        <div class="flex justify-between font-bold text-sm mt-2">
+            <span>TOTAL:</span>
+            <span>{{ inv.total | currency : 'CAD' : 'symbol-narrow' : '1.0-0' }}</span>
+        </div>
+    </div>
+
+    <div class="border-b border-dashed border-black mb-4"></div>
+
+    <!-- Footer -->
+    <div class="text-center text-[10px]">
+        <p>Resolución DIAN No. 18760000001</p>
+        <p>Rango: FV-000001 a FV-100000</p>
+        <p class="mt-2">¡Gracias por su compra!</p>
+        <p>Impreso por Software SREST</p>
+    </div>
+</div>
+} @else {
+<div class="p-4 text-center">Cargando...</div>
+}

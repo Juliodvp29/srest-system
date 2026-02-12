@@ -7,7 +7,7 @@ import { Supabase } from './supabase';
 })
 export class Orders {
   private supabase = inject(Supabase);
-  constructor() {}
+  constructor() { }
 
   // Get active orders for a branch
   async getActiveOrders(branchId: string): Promise<Order[]> {
@@ -132,6 +132,16 @@ export class Orders {
       .from('order_items')
       .update({ status })
       .eq('id', itemId);
+
+    if (error) throw error;
+  }
+
+  // Assign waiter to order
+  async assignWaiter(orderId: string, waiterId: string | null): Promise<void> {
+    const { error } = await this.supabase.client
+      .from('orders')
+      .update({ waiter_id: waiterId })
+      .eq('id', orderId);
 
     if (error) throw error;
   }

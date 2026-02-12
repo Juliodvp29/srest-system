@@ -43,6 +43,15 @@ export class Payments {
         .eq('id', payment.orderId);
     }
 
+    // Check if fully paid and generate invoice
+    if (await this.isOrderFullyPaid(payment.orderId)) {
+      // Check if invoice already exists
+      const existingInvoice = await this.getInvoiceByOrder(payment.orderId);
+      if (!existingInvoice) {
+        await this.generateInvoiceFromOrder(payment.orderId);
+      }
+    }
+
     return data as Payment;
   }
 
@@ -144,7 +153,7 @@ export class Payments {
       .insert({
         ...invoice,
         invoice_number: invoiceNumber,
-        status: 'draft'
+        status: 'accepted'
       })
       .select()
       .single();

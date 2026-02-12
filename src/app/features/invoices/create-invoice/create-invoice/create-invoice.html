@@ -1,1 +1,109 @@
-<p>create-invoice works!</p>
+<div class="h-full flex flex-col bg-slate-50 dark:bg-slate-900 overflow-hidden">
+    @if (loading()) {
+    <div class="flex-1 flex items-center justify-center">
+        <div class="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+    </div>
+    } @else {
+    <!-- Header -->
+    <header
+        class="p-6 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm z-10 sticky top-0">
+        <div class="flex items-center gap-4">
+            <button (click)="cancel()"
+                class="p-2 -ml-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <div>
+                <h1 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                    Nueva Factura
+                </h1>
+                <p class="text-sm text-slate-500 dark:text-slate-400">
+                    Orden references: {{ order()?.order_number }}
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <div class="flex-1 overflow-auto p-4 md:p-6">
+        <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <!-- Customer Form -->
+            <div
+                class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 space-y-6">
+                <h2
+                    class="text-lg font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-3">
+                    Datos del Cliente
+                </h2>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nombre / Razón
+                            Social <span class="text-red-500">*</span></label>
+                        <input type="text" [ngModel]="customerName()" (ngModelChange)="customerName.set($event)"
+                            class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-primary focus:border-primary"
+                            placeholder="Ej. Juan Pérez" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">NIT / Cédula
+                            <span class="text-red-500">*</span></label>
+                        <input type="text" [ngModel]="customerNit()" (ngModelChange)="customerNit.set($event)"
+                            class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-primary focus:border-primary"
+                            placeholder="Ej. 12345678-9" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email</label>
+                        <input type="email" [ngModel]="customerEmail()" (ngModelChange)="customerEmail.set($event)"
+                            class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-primary focus:border-primary"
+                            placeholder="cliente@ejemplo.com" />
+                    </div>
+
+                    <div>
+                        <label
+                            class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Dirección</label>
+                        <input type="text" [ngModel]="customerAddress()" (ngModelChange)="customerAddress.set($event)"
+                            class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-primary focus:border-primary"
+                            placeholder="Calle 123 #45-67" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="space-y-6">
+                <div
+                    class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+                    <h2
+                        class="text-lg font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-3 mb-4">
+                        Resumen de Factura
+                    </h2>
+
+                    <div class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+                        <div class="flex justify-between">
+                            <span>Subtotal</span>
+                            <span>{{ subtotal() | currency:'CAD':'symbol-narrow':'1.0-0' }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Impuestos (19%)</span>
+                            <span>{{ tax() | currency:'CAD':'symbol-narrow':'1.0-0' }}</span>
+                        </div>
+                        <div
+                            class="pt-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-end font-bold text-slate-900 dark:text-white">
+                            <span class="text-base">Total a Pagar</span>
+                            <span class="text-2xl">{{ total() | currency:'CAD':'symbol-narrow':'1.0-0' }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button (click)="createInvoice()" [disabled]="creating()"
+                    class="w-full py-4 bg-primary text-white rounded-xl font-bold text-lg shadow-lg shadow-primary/20 hover:bg-primary-dark hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2">
+                    @if (creating()) {
+                    <span class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                    }
+                    Generar Factura
+                </button>
+            </div>
+        </div>
+    </div>
+    }
+</div>

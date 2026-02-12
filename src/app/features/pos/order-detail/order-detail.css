@@ -2,3 +2,29 @@
   display: block;
   height: 100%;
 }
+
+/* Waiter selector dropdown animation */
+.animate-dropdown {
+  animation: dropdownSlide 0.15s ease-out;
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.waiter-dropdown .max-h-48::-webkit-scrollbar {
+  width: 4px;
+}
+
+.waiter-dropdown .max-h-48::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+}
