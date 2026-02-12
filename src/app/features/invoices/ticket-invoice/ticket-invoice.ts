@@ -1,8 +1,9 @@
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Invoice } from '@app/core/models/database.types';
+import { Invoice, Branch } from '@app/core/models/database.types';
 import { Invoices } from '@app/core/services/invoices';
+import { Branches } from '@app/core/services/branches';
 
 @Component({
   selector: 'app-ticket-invoice',
@@ -15,7 +16,9 @@ export class TicketInvoice implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private invoicesService = inject(Invoices);
+  private branchesService = inject(Branches);
 
+  branch = signal<Branch | null>(null);
   invoice = signal<any | null>(null);
   loading = signal<boolean>(true);
 
@@ -28,6 +31,10 @@ export class TicketInvoice implements OnInit {
 
   async loadInvoice(id: string) {
     try {
+      // Load branch info first
+      const branchData = await this.branchesService.getBranch();
+      this.branch.set(branchData);
+
       const data = await this.invoicesService.getInvoice(id);
       this.invoice.set(data);
 

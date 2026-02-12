@@ -83,11 +83,7 @@
         <span class="font-medium">Empleados</span>
       </a>
 
-      <a routerLink="/admin/branch-config" routerLinkActive="bg-primary/10 text-primary"
-        class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-sage/80 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group">
-        <span class="material-symbols-outlined transition-transform group-hover:scale-110">settings</span>
-        <span class="font-medium">Configuración</span>
-      </a>
+
 
       <!-- Inventory Collapsible -->
       <div class="space-y-1">
@@ -196,6 +192,17 @@
       </div>
       }
     </nav>
+
+    @if (hasRole(['admin', 'manager'])) {
+    <div class="px-4 pb-4">
+      <div class="my-2 border-t border-slate-100 dark:border-white/5 mx-2"></div>
+      <a routerLink="/admin/branch-config" routerLinkActive="bg-primary/10 text-primary"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-sage/80 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group">
+        <span class="material-symbols-outlined transition-transform group-hover:scale-110">settings</span>
+        <span class="font-medium">Configuración</span>
+      </a>
+    </div>
+    }
 
     <!-- Sidebar Footer (User info) -->
     <div class="p-6 border-t border-slate-100 dark:border-white/5">
@@ -386,6 +393,17 @@
       </div>
       }
     </nav>
+
+    @if (hasRole(['admin', 'manager'])) {
+    <div class="px-4 pb-4">
+      <div class="my-2 border-t border-slate-100 dark:border-white/5 mx-2"></div>
+      <a routerLink="/admin/branch-config" routerLinkActive="bg-primary/10 text-primary"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-sage">
+        <span class="material-symbols-outlined">settings</span>
+        <span class="font-medium">Configuración</span>
+      </a>
+    </div>
+    }
 
     <div class="p-6 border-t border-slate-100 dark:border-white/5">
       <button (click)="logout()"

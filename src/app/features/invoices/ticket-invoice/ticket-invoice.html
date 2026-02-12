@@ -2,10 +2,13 @@
 <div class="ticket-container">
     <!-- Header -->
     <div class="text-center mb-4">
+        @if (branch(); as b) {
+        <h2 class="font-bold text-lg uppercase">{{ b.name }}</h2>
+        <p class="text-xs">{{ b.address }}</p>
+        <p class="text-xs">Tel: {{ b.phone }}</p>
+        } @else {
         <h2 class="font-bold text-lg uppercase">Restaurante SREST</h2>
-        <p class="text-xs">NIT: 900.123.456-7</p>
-        <p class="text-xs">Calle 123 # 45-67, Bogotá</p>
-        <p class="text-xs">Tel: (601) 123 4567</p>
+        }
     </div>
 
     <div class="border-b border-dashed border-black mb-2"></div>
