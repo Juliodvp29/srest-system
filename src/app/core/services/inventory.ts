@@ -7,7 +7,7 @@ import { Supabase } from './supabase';
 })
 export class Inventory {
   private supabase = inject(Supabase);
-  constructor() {}
+  constructor() { }
 
   // Get all items
   async getAllInventoryItems(branchId: string): Promise<InventoryItem[]> {
@@ -76,12 +76,10 @@ export class Inventory {
       quantity,
       notes,
     });
-
-    // Update stock
-    await this.adjustStock(inventoryItemId, quantity);
+    // Stock is updated automatically by database trigger 'trigger_apply_inventory_movement'
   }
 
-  // Register consumption (when preparing a dish)
+  // Register consumption (manual or external)
   async registerConsumption(
     inventoryItemId: string,
     quantity: number,
@@ -94,9 +92,7 @@ export class Inventory {
       quantity: -quantity, // negative because it's consumed
       notes,
     });
-
-    // Update stock
-    await this.adjustStock(inventoryItemId, -quantity);
+    // Stock is updated automatically by database trigger 'trigger_apply_inventory_movement'
   }
 
   // Register manual adjustment
@@ -111,8 +107,7 @@ export class Inventory {
       quantity,
       notes,
     });
-
-    await this.adjustStock(inventoryItemId, quantity);
+    // Stock is updated automatically by database trigger 'trigger_apply_inventory_movement'
   }
 
   // Register waste
@@ -123,8 +118,7 @@ export class Inventory {
       quantity: -quantity,
       notes,
     });
-
-    await this.adjustStock(inventoryItemId, -quantity);
+    // Stock is updated automatically by database trigger 'trigger_apply_inventory_movement'
   }
 
   // Create movement
@@ -137,28 +131,6 @@ export class Inventory {
 
     if (error) throw error;
     return data as InventoryMovement;
-  }
-
-  // Adjust stock
-  private async adjustStock(inventoryItemId: string, quantityChange: number): Promise<void> {
-    // Get current stock
-    const { data: item, error: getError } = await this.supabase.client
-      .from('inventory_items')
-      .select('current_stock')
-      .eq('id', inventoryItemId)
-      .single();
-
-    if (getError) throw getError;
-
-    // Update stock
-    const newStock = item.current_stock + quantityChange;
-
-    const { error: updateError } = await this.supabase.client
-      .from('inventory_items')
-      .update({ current_stock: newStock })
-      .eq('id', inventoryItemId);
-
-    if (updateError) throw updateError;
   }
 
   async getMovementHistory(
@@ -260,19 +232,13 @@ export class Inventory {
     };
   }
 
-  // Consume inventory when preparing a product
+  /**
+   * @deprecated Stock is now consumed automatically by database trigger 'consume_inventory' 
+   * when an order_item status is set to 'completed' (or 'delivered').
+   */
   async consumeInventoryForProduct(productId: string, quantity: number = 1): Promise<void> {
-    const recipe = await this.getRecipeByProduct(productId);
-
-    for (const ingredient of recipe) {
-      const consumedQuantity = ingredient.quantity * quantity;
-
-      await this.registerConsumption(
-        ingredient.inventory_item_id,
-        consumedQuantity,
-        `Preparación de producto ID: ${productId}`,
-      );
-    }
+    // This is now handled by DB trigger on order_items update
+    console.log(`Inventory for product ${productId} is handled automatically by DB triggers.`);
   }
 
   // Delete recipe

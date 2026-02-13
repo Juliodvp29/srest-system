@@ -92,9 +92,18 @@ export interface OrderItem {
     unit_price: number;
     subtotal: number;
     special_instructions?: string;
-    status: 'pending' | 'preparing' | 'ready' | 'delivered' | 'cancelled';
+    status: 'pending' | 'preparing' | 'ready' | 'delivered' | 'cancelled' | 'completed' | 'refunded';
+    consumed: boolean;
     created_at: string;
     updated_at: string;
+}
+
+export interface BillSplitItem {
+    id: string;
+    bill_split_id: string;
+    order_item_id: string;
+    quantity: number;
+    amount: number;
 }
 
 export interface OrderItemModifier {

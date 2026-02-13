@@ -71,6 +71,7 @@ export class OrderStatus implements OnInit {
       case 'ready':
         return 75;
       case 'delivered':
+      case 'completed':
         return 100;
       default:
         return 0;
@@ -87,7 +88,12 @@ export class OrderStatus implements OnInit {
       case 'ready':
         return '¡Listo para servir!';
       case 'delivered':
+      case 'completed':
         return 'Entregado';
+      case 'refunded':
+        return 'Reembolsado';
+      case 'cancelled':
+        return 'Cancelado';
       default:
         return 'Desconocido';
     }
