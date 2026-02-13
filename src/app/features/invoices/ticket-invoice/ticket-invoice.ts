@@ -1,5 +1,5 @@
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Invoice, Branch } from '@app/core/models/database.types';
 import { Invoices } from '@app/core/services/invoices';
@@ -7,7 +7,7 @@ import { Branches } from '@app/core/services/branches';
 
 @Component({
   selector: 'app-ticket-invoice',
-  standalone: true,
+ changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, DatePipe, CurrencyPipe],
   templateUrl: './ticket-invoice.html',
   styleUrl: './ticket-invoice.css',

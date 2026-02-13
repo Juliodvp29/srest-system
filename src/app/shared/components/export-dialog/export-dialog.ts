@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ColumnConfig } from '@shared/components/dynamic-table/dynamic-table';
 
@@ -15,6 +15,7 @@ export interface ExportDialogOptions {
 
 @Component({
   selector: 'app-export-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule],
   templateUrl: './export-dialog.html',
   styleUrl: './export-dialog.css',

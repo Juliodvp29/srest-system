@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { InventoryItem } from '@app/core/models/Inventory';
 import { Inventory as InventoryService } from '@app/core/services/inventory';
@@ -9,6 +9,7 @@ import { from, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-low-stock',
+   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, DynamicTable],
   templateUrl: './low-stock.html',
   styleUrl: './low-stock.css',

@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { Category } from '@app/core/models/database.types';
 import { AlertService } from '@app/core/services/alert';
@@ -15,6 +15,7 @@ import { CategoriesForm } from '../categories-form/categories-form';
 
 @Component({
   selector: 'app-categories-list',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [DynamicTable, Modal, CategoriesForm, ConfirmationModal],
   templateUrl: './categories-list.html',
   styleUrl: './categories-list.css',

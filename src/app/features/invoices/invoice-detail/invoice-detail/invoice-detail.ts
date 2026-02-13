@@ -1,5 +1,5 @@
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Invoices } from '@app/core/services/invoices';
 
@@ -7,7 +7,7 @@ import { AlertService } from '@app/core/services/alert';
 
 @Component({
   selector: 'app-invoice-detail',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, CurrencyPipe, DatePipe],
   templateUrl: './invoice-detail.html',
   styleUrl: './invoice-detail.css',

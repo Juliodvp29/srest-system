@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { KitchenOrderItem } from '../../orders-board/order-card/order-card';
 
 @Component({
   selector: 'app-item-checklist',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
   templateUrl: './item-checklist.html',
   styleUrl: './item-checklist.css',

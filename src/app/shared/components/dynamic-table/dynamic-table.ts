@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { XlsxExportService } from '@app/core/services/xlsx-export';
 import { ExportDialog, ExportDialogOptions } from '../export-dialog/export-dialog';
@@ -31,6 +31,7 @@ export interface ActionButton {
 
 @Component({
   selector: 'app-dynamic-table',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule, ExportDialog],
   templateUrl: './dynamic-table.html',
   styleUrl: './dynamic-table.css',

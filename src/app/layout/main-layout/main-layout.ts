@@ -1,9 +1,10 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Supabase } from '@app/core/services/supabase';
 
 @Component({
   selector: 'app-main-layout',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.css',

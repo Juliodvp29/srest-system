@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { Supabase } from '@app/core/services/supabase';
 import { ActiveOrders } from './widgets/active-orders/active-orders';
 import { DailyStats } from './widgets/daily-stats/daily-stats';
@@ -8,7 +8,7 @@ import { SalesSummary } from './widgets/sales-summary/sales-summary';
 
 @Component({
   selector: 'app-home',
-  standalone: true,
+   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, SalesSummary, ActiveOrders, LowStockAlert, DailyStats],
   templateUrl: './home.html',
   styleUrl: './home.css',

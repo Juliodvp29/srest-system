@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { Order, OrderItem } from '@app/core/models/database.types';
 import { TimerDisplay } from '../timer-display/timer-display';
 
@@ -19,6 +19,7 @@ export interface KitchenOrderItem extends OrderItem {
 
 @Component({
   selector: 'app-order-card',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, TimerDisplay],
   templateUrl: './order-card.html',
   styleUrl: './order-card.css',

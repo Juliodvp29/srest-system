@@ -1,5 +1,5 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Invoices } from '@app/core/services/invoices';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -10,10 +10,10 @@ import { Tables } from '@app/core/services/tables';
 
 @Component({
   selector: 'app-payment',
+   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule],
   templateUrl: './payment.html',
   styleUrl: './payment.css',
-  standalone: true,
   providers: [CurrencyPipe],
 })
 export class Payment implements OnInit {

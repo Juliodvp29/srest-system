@@ -1,8 +1,9 @@
-import { Component, effect, inject, input, OnInit, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, OnInit, output, signal } from '@angular/core';
 import { Storages } from '@app/core/services/storages';
 
 @Component({
   selector: 'app-product-image-upload',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [],
   templateUrl: './product-image-upload.html',
   styleUrl: './product-image-upload.css',

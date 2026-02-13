@@ -1,5 +1,5 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Reports } from '@app/core/services/reports';
 import { Supabase } from '@app/core/services/supabase';
@@ -46,7 +46,7 @@ export type PieChartOptions = {
 
 @Component({
   selector: 'app-products-report',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule, NgApexchartsModule],
   providers: [CurrencyPipe],
   templateUrl: './products-report.html',

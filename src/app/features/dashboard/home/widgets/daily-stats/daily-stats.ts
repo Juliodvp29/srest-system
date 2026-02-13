@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { Orders } from '@app/core/services/orders';
 import { Supabase } from '@app/core/services/supabase';
@@ -8,7 +8,7 @@ import { from, map, switchMap, zip } from 'rxjs';
 
 @Component({
   selector: 'app-daily-stats',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
   templateUrl: './daily-stats.html',
   styleUrl: './daily-stats.css',

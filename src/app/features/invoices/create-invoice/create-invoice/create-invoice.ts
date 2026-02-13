@@ -1,5 +1,5 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Order } from '@app/core/models/database.types';
@@ -10,7 +10,7 @@ import { AlertService } from '@app/core/services/alert';
 
 @Component({
   selector: 'app-create-invoice',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule, CurrencyPipe],
   templateUrl: './create-invoice.html',
   styleUrl: './create-invoice.css',

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Category } from '@app/core/models/database.types';
 import { AlertService } from '@app/core/services/alert';
@@ -7,6 +7,7 @@ import { Products } from '@app/core/services/products';
 
 @Component({
   selector: 'app-categories-form',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './categories-form.html',
   styleUrl: './categories-form.css',

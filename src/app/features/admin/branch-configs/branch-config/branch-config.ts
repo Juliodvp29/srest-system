@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Branch } from '@app/core/models/database.types';
 import { AlertService } from '@app/core/services/alert';
@@ -7,7 +7,7 @@ import { Branches } from '@app/core/services/branches';
 
 @Component({
   selector: 'app-branch-config',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule],
   templateUrl: './branch-config.html',
   styleUrl: './branch-config.css',

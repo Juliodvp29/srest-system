@@ -1,5 +1,5 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService } from '@app/core/services/alert';
@@ -22,10 +22,10 @@ interface Split {
 
 @Component({
   selector: 'app-split-bill',
+   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule],
   templateUrl: './split-bill.html',
   styleUrl: './split-bill.css',
-  standalone: true,
   providers: [CurrencyPipe],
 })
 export class SplitBill implements OnInit {

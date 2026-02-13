@@ -1,5 +1,5 @@
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
-import { Component, ElementRef, HostListener, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService } from '@app/core/services/alert';
 import { Employee, Employees } from '@app/core/services/employees';
@@ -9,6 +9,7 @@ import { Tables } from '@app/core/services/tables';
 
 @Component({
   selector: 'app-order-detail',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
   templateUrl: './order-detail.html',
   styleUrl: './order-detail.css',
