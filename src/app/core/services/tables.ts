@@ -7,7 +7,7 @@ import { Supabase } from './supabase';
 })
 export class Tables {
   private supabase = inject(Supabase);
-  constructor() {}
+  constructor() { }
 
   // Get tables by branch
   async getTablesByBranch(branchId: string): Promise<Table[]> {
@@ -110,18 +110,42 @@ export class Tables {
     await this.updateTableStatus(tableId, 'available');
   }
 
-  // Check and update table status based on active orders
+  // Check and update table status based on active orders and today's reservations
   async checkAndUpdateTableStatus(tableId: string): Promise<void> {
-    const { count, error } = await this.supabase.client
+    // 1. Check for active orders (highest priority)
+    const { count: orderCount, error: orderError } = await this.supabase.client
       .from('orders')
       .select('*', { count: 'exact', head: true })
       .eq('table_id', tableId)
       .in('status', ['pending', 'preparing', 'ready']);
 
-    if (error) throw error;
+    if (orderError) throw orderError;
 
-    const newStatus = count && count > 0 ? 'occupied' : 'available';
-    await this.updateTableStatus(tableId, newStatus);
+    if (orderCount && orderCount > 0) {
+      await this.updateTableStatus(tableId, 'occupied');
+      return;
+    }
+
+    // 2. Check for reservations TODAY
+    const today = new Date().toLocaleDateString('en-CA');
+    const start = new Date(`${today}T00:00:00`).toISOString();
+    const end = new Date(`${today}T23:59:59.999`).toISOString();
+
+    const { count: resCount, error: resError } = await this.supabase.client
+      .from('reservations')
+      .select('*', { count: 'exact', head: true })
+      .eq('table_id', tableId)
+      .in('status', ['booked', 'confirmed'])
+      .gte('reservation_time', start)
+      .lte('reservation_time', end);
+
+    if (resError) throw resError;
+
+    if (resCount && resCount > 0) {
+      await this.updateTableStatus(tableId, 'reserved');
+    } else {
+      await this.updateTableStatus(tableId, 'available');
+    }
   }
 
   // Mark table for cleaning

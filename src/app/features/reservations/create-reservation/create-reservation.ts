@@ -96,10 +96,9 @@ export class CreateReservation implements OnInit {
 
             await this.reservationsService.createReservation(reservation);
 
-            // If reservation is for today and a table is selected, mark table as reserved
-            const today = new Date().toLocaleDateString('en-CA');
-            if (this.date() === today && this.selectedTableId()) {
-                await this.tablesService.updateTableStatus(this.selectedTableId(), 'reserved');
+            // Sync Table Status
+            if (this.selectedTableId()) {
+                await this.tablesService.checkAndUpdateTableStatus(this.selectedTableId());
             }
 
             this.errorService.success('Éxito', 'Reserva creada correctamente.');
