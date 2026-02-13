@@ -1,3 +1,12 @@
+export type InventoryMovementType =
+  | 'purchase'
+  | 'sale'
+  | 'cancel'
+  | 'adjustment'
+  | 'waste'
+  | 'transfer'
+  | 'return';
+
 export interface InventoryItem {
   id: string;
   branch_id: string;
@@ -20,8 +29,12 @@ export interface Recipe {
 export interface InventoryMovement {
   id: string;
   inventory_item_id: string;
-  movement_type: 'purchase' | 'adjustment' | 'consumption' | 'waste';
+  movement_type: InventoryMovementType;
   quantity: number;
+
+  reference_id?: string;
+  reference_type?: string;
+
   notes?: string;
   created_by?: string;
   created_at: string;
