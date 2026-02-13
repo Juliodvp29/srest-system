@@ -11,7 +11,7 @@ export class Orders {
 
   // Get active orders for a branch
   async getActiveOrders(branchId: string): Promise<Order[]> {
-    const { data, error } = await this.supabase.client
+    const { data, error } = await this.supabase.withLoading(() => this.supabase.client
       .from('orders')
       .select(
         `
@@ -22,7 +22,7 @@ export class Orders {
       )
       .eq('branch_id', branchId)
       .in('status', ['pending', 'preparing', 'ready'])
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false }));
 
     if (error) throw error;
     return data as any[];
@@ -30,7 +30,7 @@ export class Orders {
 
   // Get order with items
   async getOrderWithItems(orderId: string): Promise<any> {
-    const { data, error } = await this.supabase.client
+    const { data, error } = await this.supabase.withLoading(() => this.supabase.client
       .from('orders')
       .select(
         `
@@ -48,7 +48,7 @@ export class Orders {
       `,
       )
       .eq('id', orderId)
-      .single();
+      .single());
 
     if (error) throw error;
     return data;
@@ -59,14 +59,14 @@ export class Orders {
     // Generate order number
     const orderNumber = await this.generateOrderNumber(order.branch_id!);
 
-    const { data, error } = await this.supabase.client
+    const { data, error } = await this.supabase.withLoading(() => this.supabase.client
       .from('orders')
       .insert({
         ...order,
         order_number: orderNumber,
       })
       .select()
-      .single();
+      .single());
 
     if (error) throw error;
     return data as Order;
@@ -76,12 +76,12 @@ export class Orders {
   private async generateOrderNumber(branchId: string): Promise<string> {
     const today = new Date().toISOString().split('T')[0];
 
-    const { count, error } = await this.supabase.client
+    const { count, error } = await this.supabase.withLoading(() => this.supabase.client
       .from('orders')
       .select('*', { count: 'exact', head: true })
       .eq('branch_id', branchId)
       .gte('created_at', `${today}T00:00:00`)
-      .lte('created_at', `${today}T23:59:59`);
+      .lte('created_at', `${today}T23:59:59`));
 
     if (error) throw error;
 
@@ -91,11 +91,11 @@ export class Orders {
 
   // Add item to order
   async addItemToOrder(orderItem: Partial<OrderItem>): Promise<OrderItem> {
-    const { data, error } = await this.supabase.client
+    const { data, error } = await this.supabase.withLoading(() => this.supabase.client
       .from('order_items')
       .insert(orderItem)
       .select()
-      .single();
+      .single());
 
     if (error) throw error;
     return data as OrderItem;
@@ -111,47 +111,47 @@ export class Orders {
       ...mod,
     }));
 
-    const { error } = await this.supabase.client.from('order_item_modifiers').insert(modifiersData);
+    const { error } = await this.supabase.withLoading(() => this.supabase.client.from('order_item_modifiers').insert(modifiersData));
 
     if (error) throw error;
   }
 
   // Update order status
   async updateOrderStatus(orderId: string, status: Order['status']): Promise<void> {
-    const { error } = await this.supabase.client
+    const { error } = await this.supabase.withLoading(() => this.supabase.client
       .from('orders')
       .update({ status })
-      .eq('id', orderId);
+      .eq('id', orderId));
 
     if (error) throw error;
   }
 
   // Update item status
   async updateItemStatus(itemId: string, status: OrderItem['status']): Promise<void> {
-    const { error } = await this.supabase.client
+    const { error } = await this.supabase.withLoading(() => this.supabase.client
       .from('order_items')
       .update({ status })
-      .eq('id', itemId);
+      .eq('id', itemId));
 
     if (error) throw error;
   }
 
   // Assign waiter to order
   async assignWaiter(orderId: string, waiterId: string | null): Promise<void> {
-    const { error } = await this.supabase.client
+    const { error } = await this.supabase.withLoading(() => this.supabase.client
       .from('orders')
       .update({ waiter_id: waiterId })
-      .eq('id', orderId);
+      .eq('id', orderId));
 
     if (error) throw error;
   }
 
   // Cancel order
   async cancelOrder(orderId: string): Promise<void> {
-    const { error } = await this.supabase.client
+    const { error } = await this.supabase.withLoading(() => this.supabase.client
       .from('orders')
       .update({ status: 'cancelled' })
-      .eq('id', orderId);
+      .eq('id', orderId));
 
     if (error) throw error;
   }
@@ -176,7 +176,7 @@ export class Orders {
       const total = subtotal + tax;
 
       // Create bill split record
-      const { data: billSplit, error: splitError } = await this.supabase.client
+      const { data: billSplit, error: splitError } = await this.supabase.withLoading(() => this.supabase.client
         .from('bill_splits')
         .insert({
           order_id: orderId,
@@ -188,7 +188,7 @@ export class Orders {
           tip: 0,
         })
         .select()
-        .single();
+        .single());
 
       if (splitError) throw splitError;
 
@@ -200,9 +200,9 @@ export class Orders {
         amount: item.amount,
       }));
 
-      const { error: itemsError } = await this.supabase.client
+      const { error: itemsError } = await this.supabase.withLoading(() => this.supabase.client
         .from('bill_split_items')
-        .insert(splitItemsData);
+        .insert(splitItemsData));
 
       if (itemsError) throw itemsError;
     }
@@ -210,7 +210,7 @@ export class Orders {
 
   // Get bill splits for an order
   async getBillSplits(orderId: string): Promise<any[]> {
-    const { data, error } = await this.supabase.client
+    const { data, error } = await this.supabase.withLoading(() => this.supabase.client
       .from('bill_splits')
       .select(
         `
@@ -225,7 +225,7 @@ export class Orders {
       `,
       )
       .eq('order_id', orderId)
-      .order('split_number');
+      .order('split_number'));
 
     if (error) throw error;
     return data;
@@ -287,13 +287,13 @@ export class Orders {
     const today = new Date().toISOString().split('T')[0];
 
     // Get orders for today that are not cancelled
-    const { data: orders, error } = await this.supabase.client
+    const { data, error } = await this.supabase.withLoading(() => this.supabase.client
       .from('orders')
       .select('total, status')
       .eq('branch_id', branchId)
       .gte('created_at', `${today}T00:00:00`)
       .lte('created_at', `${today}T23:59:59`)
-      .eq('status', 'delivered');
+      .eq('status', 'delivered'));
 
     if (error) throw error;
 

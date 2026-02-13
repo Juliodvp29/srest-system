@@ -17,7 +17,7 @@ export class Payments {
     billSplitId?: string;
     transactionReference?: string;
   }): Promise<Payment> {
-    const { data, error } = await this.supabase.client
+    const { data, error } = await this.supabase.withLoading(() => this.supabase.client
       .from('payments')
       .insert({
         order_id: payment.orderId,
@@ -28,7 +28,7 @@ export class Payments {
         transaction_reference: payment.transactionReference
       })
       .select()
-      .single();
+      .single());
 
     if (error) throw error;
 
@@ -37,10 +37,10 @@ export class Payments {
       await this.markSplitAsPaid(payment.billSplitId);
     } else {
       // If no split, update order status
-      await this.supabase.client
+      await this.supabase.withLoading(() => this.supabase.client
         .from('orders')
         .update({ status: 'delivered' })
-        .eq('id', payment.orderId);
+        .eq('id', payment.orderId));
     }
 
     // Check if fully paid and generate invoice
@@ -57,21 +57,21 @@ export class Payments {
 
   // Mark split as paid
   private async markSplitAsPaid(billSplitId: string): Promise<void> {
-    const { error } = await this.supabase.client
+    const { error } = await this.supabase.withLoading(() => this.supabase.client
       .from('bill_splits')
       .update({ is_paid: true })
-      .eq('id', billSplitId);
+      .eq('id', billSplitId));
 
     if (error) throw error;
   }
 
   // Get payments for an order
   async getPaymentsByOrder(orderId: string): Promise<Payment[]> {
-    const { data, error } = await this.supabase.client
+    const { data, error } = await this.supabase.withLoading(() => this.supabase.client
       .from('payments')
       .select('*')
       .eq('order_id', orderId)
-      .order('created_at');
+      .order('created_at'));
 
     if (error) throw error;
     return data as Payment[];
@@ -80,20 +80,20 @@ export class Payments {
   // Verify if order is fully paid
   async isOrderFullyPaid(orderId: string): Promise<boolean> {
     // Get order total
-    const { data: order, error: orderError } = await this.supabase.client
+    const { data: order, error: orderError } = await this.supabase.withLoading(() => this.supabase.client
       .from('orders')
       .select('total')
       .eq('id', orderId)
-      .single();
+      .single());
 
     if (orderError) throw orderError;
 
     // Get sum of payments
-    const { data: payments, error: paymentsError } = await this.supabase.client
+    const { data: payments, error: paymentsError } = await this.supabase.withLoading(() => this.supabase.client
       .from('payments')
       .select('amount')
       .eq('order_id', orderId)
-      .eq('status', 'completed');
+      .eq('status', 'completed'));
 
     if (paymentsError) throw paymentsError;
 
@@ -134,10 +134,10 @@ export class Payments {
 
   // Process refund
   async processRefund(paymentId: string): Promise<void> {
-    const { error } = await this.supabase.client
+    const { error } = await this.supabase.withLoading(() => this.supabase.client
       .from('payments')
       .update({ status: 'refunded' })
-      .eq('id', paymentId);
+      .eq('id', paymentId));
 
     if (error) throw error;
   }
@@ -148,7 +148,7 @@ export class Payments {
     // Generate consecutive number
     const invoiceNumber = await this.generateInvoiceNumber();
 
-    const { data, error } = await this.supabase.client
+    const { data, error } = await this.supabase.withLoading(() => this.supabase.client
       .from('invoices')
       .insert({
         ...invoice,
@@ -156,7 +156,7 @@ export class Payments {
         status: 'accepted'
       })
       .select()
-      .single();
+      .single());
 
     if (error) throw error;
     return data as Invoice;
@@ -164,9 +164,9 @@ export class Payments {
 
   // Generate consecutive number of invoice
   private async generateInvoiceNumber(): Promise<string> {
-    const { count, error } = await this.supabase.client
+    const { count, error } = await this.supabase.withLoading(() => this.supabase.client
       .from('invoices')
-      .select('*', { count: 'exact', head: true });
+      .select('*', { count: 'exact', head: true }));
 
     if (error) throw error;
 
@@ -185,11 +185,11 @@ export class Payments {
     }
   ): Promise<Invoice> {
     // Get complete order
-    const { data: order, error: orderError } = await this.supabase.client
+    const { data: order, error: orderError } = await this.supabase.withLoading(() => this.supabase.client
       .from('orders')
       .select('*')
       .eq('id', orderId)
-      .single();
+      .single());
 
     if (orderError) throw orderError;
 
@@ -210,11 +210,11 @@ export class Payments {
 
   // Get invoice by order
   async getInvoiceByOrder(orderId: string): Promise<Invoice | null> {
-    const { data, error } = await this.supabase.client
+    const { data, error } = await this.supabase.withLoading(() => this.supabase.client
       .from('invoices')
       .select('*')
       .eq('order_id', orderId)
-      .maybeSingle();
+      .maybeSingle());
 
     if (error) throw error;
     return data as Invoice | null;
@@ -222,11 +222,11 @@ export class Payments {
 
   // Get all invoices
   async getAllInvoices(limit: number = 50): Promise<Invoice[]> {
-    const { data, error } = await this.supabase.client
+    const { data, error } = await this.supabase.withLoading(() => this.supabase.client
       .from('invoices')
       .select('*')
       .order('created_at', { ascending: false })
-      .limit(limit);
+      .limit(limit));
 
     if (error) throw error;
     return data as Invoice[];

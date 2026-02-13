@@ -16,7 +16,7 @@ export class Products {
   // Get all products with category name
   getAllProducts(): Observable<any[]> {
     return from(
-      this.supabase.client
+      this.supabase.withLoading(() => this.supabase.client
         .from('products')
         .select(
           `
@@ -27,7 +27,7 @@ export class Products {
         `,
         )
         .eq('is_active', true)
-        .order('name'),
+        .order('name')),
     ).pipe(
       map(({ data, error }) => {
         if (error) throw error;
@@ -42,12 +42,12 @@ export class Products {
     const toIndex = fromIndex + size - 1;
 
     return from(
-      this.supabase.client
+      this.supabase.withLoading(() => this.supabase.client
         .from('products')
         .select('*, categories(name)', { count: 'exact' })
         .eq('is_active', true)
         .order('created_at', { ascending: false })
-        .range(fromIndex, toIndex),
+        .range(fromIndex, toIndex)),
     ).pipe(
       map(({ data, error, count }) => {
         if (error) throw error;
@@ -59,12 +59,12 @@ export class Products {
   // Get products by category
   getProductsByCategory(categoryId: string): Observable<Product[]> {
     return from(
-      this.supabase.client
+      this.supabase.withLoading(() => this.supabase.client
         .from('products')
         .select('*')
         .eq('category_id', categoryId)
         .eq('is_active', true)
-        .order('name'),
+        .order('name')),
     ).pipe(
       map(({ data, error }) => {
         if (error) throw error;
@@ -75,7 +75,7 @@ export class Products {
 
   // Get product by ID
   getProductById(id: string): Observable<Product> {
-    return from(this.supabase.client.from('products').select('*').eq('id', id).single()).pipe(
+    return from(this.supabase.withLoading(() => this.supabase.client.from('products').select('*').eq('id', id).single())).pipe(
       map(({ data, error }) => {
         if (error) throw error;
         return data as Product;
@@ -85,7 +85,7 @@ export class Products {
 
   // Create product
   createProduct(product: Partial<Product>): Observable<Product> {
-    return from(this.supabase.client.from('products').insert(product).select().single()).pipe(
+    return from(this.supabase.withLoading(() => this.supabase.client.from('products').insert(product).select().single())).pipe(
       map(({ data, error }) => {
         if (error) throw error;
         return data as Product;
@@ -96,7 +96,7 @@ export class Products {
   // Update product
   updateProduct(id: string, updates: Partial<Product>): Observable<Product> {
     return from(
-      this.supabase.client.from('products').update(updates).eq('id', id).select().single(),
+      this.supabase.withLoading(() => this.supabase.client.from('products').update(updates).eq('id', id).select().single()),
     ).pipe(
       map(({ data, error }) => {
         if (error) throw error;
@@ -108,7 +108,7 @@ export class Products {
   // Delete product (soft delete)
   deleteProduct(id: string): Observable<void> {
     return from(
-      this.supabase.client.from('products').update({ is_active: false }).eq('id', id),
+      this.supabase.withLoading(() => this.supabase.client.from('products').update({ is_active: false }).eq('id', id)),
     ).pipe(
       tap(() => this.storages.deleteEntityImages('product', id)),
       map(({ error }) => {
@@ -120,7 +120,7 @@ export class Products {
   // Toggle availability
   toggleAvailability(id: string, isAvailable: boolean): Observable<void> {
     return from(
-      this.supabase.client.from('products').update({ is_available: isAvailable }).eq('id', id),
+      this.supabase.withLoading(() => this.supabase.client.from('products').update({ is_available: isAvailable }).eq('id', id)),
     ).pipe(
       map(({ error }) => {
         if (error) throw error;
@@ -131,11 +131,11 @@ export class Products {
   // Get all categories
   getAllCategories(): Observable<Category[]> {
     return from(
-      this.supabase.client
+      this.supabase.withLoading(() => this.supabase.client
         .from('categories')
         .select('*')
         .eq('is_active', true)
-        .order('display_order'),
+        .order('display_order')),
     ).pipe(
       map(({ data, error }) => {
         if (error) throw error;

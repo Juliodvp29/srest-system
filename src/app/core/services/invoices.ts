@@ -51,7 +51,7 @@ export class Invoices {
             query = query.or(`invoice_number.ilike.%${search}%,customer_name.ilike.%${search}%`);
         }
 
-        const { data, error } = await query;
+        const { data, error } = await this.supabase.withLoading(() => query);
 
         if (error) throw error;
         return data as any[];
@@ -59,7 +59,7 @@ export class Invoices {
 
     // Get active invoices for a branch (e.g., specific date range default)
     async getRecentInvoices(branchId: string): Promise<Invoice[]> {
-        const { data, error } = await this.supabase.client
+        const { data, error } = await this.supabase.withLoading(() => this.supabase.client
             .from('invoices')
             .select(
                 `
@@ -72,7 +72,7 @@ export class Invoices {
             // Assuming we need to join to filter:
             .eq('order.branch_id', branchId)
             .order('created_at', { ascending: false })
-            .limit(50);
+            .limit(50));
 
         if (error) throw error;
         return data as any[];
@@ -80,7 +80,7 @@ export class Invoices {
 
     // Get invoice by ID
     async getInvoice(invoiceId: string): Promise<any> {
-        const { data, error } = await this.supabase.client
+        const { data, error } = await this.supabase.withLoading(() => this.supabase.client
             .from('invoices')
             .select(
                 `
@@ -99,7 +99,7 @@ export class Invoices {
       `,
             )
             .eq('id', invoiceId)
-            .single();
+            .single());
 
         if (error) throw error;
         return data;
@@ -107,11 +107,11 @@ export class Invoices {
 
     // Get invoice by Order ID
     async getInvoiceByOrderId(orderId: string): Promise<Invoice | null> {
-        const { data, error } = await this.supabase.client
+        const { data, error } = await this.supabase.withLoading(() => this.supabase.client
             .from('invoices')
             .select('*')
             .eq('order_id', orderId)
-            .maybeSingle();
+            .maybeSingle());
 
         if (error) throw error;
         return data;
@@ -130,11 +130,11 @@ export class Invoices {
             // Logic to generate invoice number if needed
         }
 
-        const { data, error } = await this.supabase.client
+        const { data, error } = await this.supabase.withLoading(() => this.supabase.client
             .from('invoices')
             .insert(invoice)
             .select()
-            .single();
+            .single());
 
         if (error) throw error;
         return data as Invoice;
@@ -142,12 +142,12 @@ export class Invoices {
 
     // Update invoice
     async updateInvoice(invoiceId: string, updates: Partial<Invoice>): Promise<Invoice> {
-        const { data, error } = await this.supabase.client
+        const { data, error } = await this.supabase.withLoading(() => this.supabase.client
             .from('invoices')
             .update(updates)
             .eq('id', invoiceId)
             .select()
-            .single();
+            .single());
 
         if (error) throw error;
         return data as Invoice;

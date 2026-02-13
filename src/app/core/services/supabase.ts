@@ -60,6 +60,18 @@ export class Supabase {
     return this.supabase;
   }
 
+  // Helper to run any async Supabase operation while toggling global loading
+  private loading = inject(Loading);
+
+  async withLoading<T>(fn: () => Promise<T>): Promise<T> {
+    try {
+      this.loading.show();
+      return await fn();
+    } finally {
+      this.loading.hide();
+    }
+  }
+
   // Sign
   async signIn(email: string, password: string) {
     const { data, error } = await this.supabase.auth.signInWithPassword({
