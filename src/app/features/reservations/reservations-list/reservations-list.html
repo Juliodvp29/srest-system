@@ -1,0 +1,151 @@
+<div class="h-full flex flex-col bg-slate-50 dark:bg-slate-900 overflow-hidden">
+    <!-- Header -->
+    <header
+        class="p-6 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm z-10 sticky top-0">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                    Reservas
+                </h1>
+                <p class="text-sm text-slate-500 dark:text-slate-400">
+                    Gestiona las reservas de mesas
+                </p>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <!-- Toggle View -->
+                <button (click)="toggleUpcoming()"
+                    class="flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-semibold transition-all"
+                    [ngClass]="showUpcoming() ? 'bg-primary/10 border-primary text-primary' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'">
+                    <span class="material-symbols-outlined text-sm">
+                        {{ showUpcoming() ? 'calendar_view_day' : 'event' }}
+                    </span>
+                    <span>{{ showUpcoming() ? 'Próximas' : 'Solo este día' }}</span>
+                </button>
+
+                <input type="date" [ngModel]="selectedDate()" (ngModelChange)="selectedDate.set($event); onDateChange()"
+                    class="px-4 py-2 rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-primary focus:border-primary text-sm font-medium" />
+
+                <a routerLink="/reservations/create"
+                    class="px-4 py-2 bg-primary text-white rounded-lg font-bold hover:bg-primary-dark transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">add</span>
+                    <span>Nueva Reserva</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <div class="flex-1 overflow-auto p-4 md:p-6">
+        <div class="max-w-7xl mx-auto">
+
+            @if (loading()) {
+            <div class="p-12 text-center">
+                <div
+                    class="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4">
+                </div>
+                <p class="text-slate-500">Cargando reservas...</p>
+            </div>
+            } @else if (reservations().length === 0) {
+            <div
+                class="p-12 text-center bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
+                <div
+                    class="w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="material-symbols-outlined text-3xl text-slate-400">event_busy</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">No hay reservas</h3>
+                <p class="text-slate-500">
+                    {{ showUpcoming() ? 'No hay reservas futuras programadas.' : 'No hay reservas programadas para el '
+                    + (selectedDate() | date:'dd/MM/yyyy') + '.' }}
+                </p>
+            </div>
+            } @else {
+            <div class="grid gap-4">
+                @for (reservation of reservations(); track reservation.id) {
+                <div
+                    class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+
+                        <!-- Time & Customer -->
+                        <div class="flex items-start gap-4">
+                            <div
+                                class="flex flex-col items-center justify-center p-3 bg-slate-100 dark:bg-slate-700 rounded-lg min-w-[80px]">
+                                <span class="text-lg font-bold text-slate-900 dark:text-white">
+                                    {{ reservation.reservation_time | date:'HH:mm' }}
+                                </span>
+                                <span class="text-xs text-slate-500 dark:text-slate-400 uppercase font-bold">
+                                    {{ reservation.party_size }} Pers.
+                                </span>
+                            </div>
+
+                            <div>
+                                <h3 class="font-bold text-slate-900 dark:text-white text-lg">
+                                    {{ reservation.customer_name }}
+                                </h3>
+                                <div class="flex flex-wrap gap-3 text-sm text-slate-500 dark:text-slate-400 mt-1">
+                                    @if(reservation.customer_phone) {
+                                    <span class="flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-xs">call</span>
+                                        {{ reservation.customer_phone }}
+                                    </span>
+                                    }
+                                    @if(reservation.table) {
+                                    <span class="flex items-center gap-1 text-primary font-medium">
+                                        <span class="material-symbols-outlined text-xs">table_restaurant</span>
+                                        Mesa {{ reservation.table.table_number }}
+                                    </span>
+                                    } @else {
+                                    <span class="text-orange-500 text-xs italic">Sin mesa asignada</span>
+                                    }
+                                </div>
+                                @if (reservation.notes) {
+                                <p
+                                    class="text-sm text-slate-600 dark:text-slate-300 mt-2 bg-yellow-50 dark:bg-yellow-900/10 p-2 rounded border border-yellow-100 dark:border-yellow-900/20 inline-block">
+                                    Note: {{ reservation.notes }}
+                                </p>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Status & Actions -->
+                        <div class="flex items-center gap-4">
+                            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border"
+                                [ngClass]="getStatusColor(reservation.status)">
+                                {{ getStatusLabel(reservation.status) }}
+                            </span>
+
+                            <div class="flex items-center gap-2">
+                                @if (reservation.status === 'booked' || reservation.status === 'confirmed') {
+                                <button (click)="updateStatus(reservation, 'seated')"
+                                    class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                    title="Marcar como En Mesa">
+                                    <span class="material-symbols-outlined">chair_alt</span>
+                                </button>
+                                <button (click)="updateStatus(reservation, 'cancelled')"
+                                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                    title="Cancelar Reserva">
+                                    <span class="material-symbols-outlined">cancel</span>
+                                </button>
+                                <button (click)="updateStatus(reservation, 'no_show')"
+                                    class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
+                                    title="Marcar No Show">
+                                    <span class="material-symbols-outlined">person_off</span>
+                                </button>
+                                }
+                                @if (reservation.status === 'seated') {
+                                <button (click)="updateStatus(reservation, 'completed')"
+                                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                    title="Completar Reserva">
+                                    <span class="material-symbols-outlined">check_circle</span>
+                                </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+            }
+        </div>
+    </div>
+</div>

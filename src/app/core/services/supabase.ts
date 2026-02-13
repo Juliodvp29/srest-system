@@ -2,6 +2,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '@env/environment';
 import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
+import { Loading } from './loading';
 
 @Injectable({
   providedIn: 'root',
@@ -63,7 +64,7 @@ export class Supabase {
   // Helper to run any async Supabase operation while toggling global loading
   private loading = inject(Loading);
 
-  async withLoading<T>(fn: () => Promise<T>): Promise<T> {
+  async withLoading<T>(fn: () => PromiseLike<T>): Promise<T> {
     try {
       this.loading.show();
       return await fn();

@@ -297,7 +297,9 @@ export class Orders {
 
     if (error) throw error;
 
-    const totalSales = orders?.reduce((sum, order) => sum + (order.total || 0), 0) || 0;
+    const orders = data as Order[] | null;
+
+    const totalSales = orders?.reduce((sum: number, order: Order) => sum + (order.total || 0), 0) || 0;
     const orderCount = orders?.length || 0;
 
     return { totalSales, orderCount };

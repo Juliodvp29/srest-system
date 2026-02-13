@@ -50,6 +50,14 @@
       </div>
       }
 
+      @if (hasRole(['admin', 'manager', 'waiter'])) {
+      <a routerLink="/reservations" routerLinkActive="bg-primary/10 text-primary"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-sage/80 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group">
+        <span class="material-symbols-outlined transition-transform group-hover:scale-110">event_available</span>
+        <span class="font-medium">Reservas</span>
+      </a>
+      }
+
       @if (hasRole(['admin', 'manager', 'chef'])) {
       <a routerLink="/kitchen" routerLinkActive="bg-primary/10 text-primary"
         class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-sage/80 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group">
@@ -267,6 +275,14 @@
           </a>
         </div>
       </div>
+      }
+
+      @if (hasRole(['admin', 'manager', 'waiter'])) {
+      <a routerLink="/reservations" routerLinkActive="bg-primary/10 text-primary"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600">
+        <span class="material-symbols-outlined">event_available</span>
+        <span class="font-medium">Reservas</span>
+      </a>
       }
 
       @if (hasRole(['admin', 'manager', 'chef'])) {

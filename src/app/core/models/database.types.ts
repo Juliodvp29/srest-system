@@ -151,3 +151,22 @@ export interface Invoice {
     accepted_at?: string;
     order?: Order;
 }
+
+export type ReservationStatus = 'booked' | 'confirmed' | 'seated' | 'completed' | 'cancelled' | 'no_show';
+
+export interface Reservation {
+    id: string;
+    branch_id: string;
+    table_id?: string;
+    customer_name: string;
+    customer_phone?: string;
+    customer_email?: string;
+    party_size: number;
+    reservation_time: string; // timestamp with time zone
+    duration_minutes: number;
+    status: ReservationStatus;
+    notes?: string;
+    created_at: string;
+    updated_at: string;
+    table?: Table; // For joined queries
+}

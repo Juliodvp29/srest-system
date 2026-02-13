@@ -9,13 +9,22 @@ export class Branches {
     private supabase = inject(Supabase);
 
     async getBranch(): Promise<Branch | null> {
-        const { data: { user } } = await this.supabase.client.auth.getUser();
-        if (!user) return null;
+        // Use initialized to ensure profile is loaded
+        await this.supabase.initialized;
+        const profile = this.supabase.userProfile();
 
-        // First try to find branch linked to user if there's a relation (e.g. employee)
-        // For now assuming single tenant or getting the first active branch for demo
-        // Ideally we would get the branch from the employee record
+        // If user has a branch assigned, use it
+        if (profile?.branch_id) {
+            const { data, error } = await this.supabase.client
+                .from('branches')
+                .select('*')
+                .eq('id', profile.branch_id)
+                .single();
 
+            if (!error) return data as any as Branch;
+        }
+
+        // Fallback to first active branch
         const { data, error } = await this.supabase.client
             .from('branches')
             .select('*')
@@ -25,7 +34,7 @@ export class Branches {
 
         if (error) {
             console.error('Error fetching branch:', error);
-            return null; // Or throw
+            return null;
         }
 
         return data as any as Branch;
