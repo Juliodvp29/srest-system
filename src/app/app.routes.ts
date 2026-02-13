@@ -77,6 +77,11 @@ export const routes: Routes = [
           import('./features/invoices/invoices.routes').then((m) => m.INVOICES_ROUTES),
       },
       {
+        path: 'user-manual',
+        loadComponent: () =>
+          import('./features/admin/user-manual/user-manual').then((m) => m.UserManual),
+      },
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full',

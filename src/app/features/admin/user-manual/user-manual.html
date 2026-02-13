@@ -1,0 +1,295 @@
+<div class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <!-- Header Section -->
+    <div class="relative overflow-hidden rounded-3xl bg-primary/10 p-8 sm:p-12">
+        <div class="relative z-10">
+            <h1 class="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white mb-4">
+                Manual de Usuario
+            </h1>
+            <p class="text-lg text-sage dark:text-sage/60 max-w-2xl leading-relaxed">
+                Guía completa para dominar todas las funciones de tu sistema de restaurante.
+                Desde la toma de pedidos hasta el análisis de ventas.
+            </p>
+        </div>
+        <!-- Decorative background element -->
+        <div
+            class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 size-96 bg-primary/20 rounded-full blur-3xl">
+        </div>
+    </div>
+
+    <!-- Content Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+
+        <!-- Sidebar / Navigation (Desktop) -->
+        <aside class="hidden md:block md:col-span-3 sticky top-24 h-fit space-y-2">
+            <nav class="flex flex-col space-y-1">
+                <button (click)="scrollTo('acceso')"
+                    class="px-4 py-2 rounded-lg text-left text-sm font-medium text-slate-600 dark:text-sage/80 hover:bg-white dark:hover:bg-white/5 transition-all">1.
+                    Acceso al Sistema</button>
+                <button (click)="scrollTo('pos')"
+                    class="px-4 py-2 rounded-lg text-left text-sm font-medium text-slate-600 dark:text-sage/80 hover:bg-white dark:hover:bg-white/5 transition-all">2.
+                    Punto de Venta (POS)</button>
+                <button (click)="scrollTo('cocina')"
+                    class="px-4 py-2 rounded-lg text-left text-sm font-medium text-slate-600 dark:text-sage/80 hover:bg-white dark:hover:bg-white/5 transition-all">3.
+                    Gestión de Cocina</button>
+                <button (click)="scrollTo('reservas')"
+                    class="px-4 py-2 rounded-lg text-left text-sm font-medium text-slate-600 dark:text-sage/80 hover:bg-white dark:hover:bg-white/5 transition-all">4.
+                    Reservaciones</button>
+                <button (click)="scrollTo('inventario')"
+                    class="px-4 py-2 rounded-lg text-left text-sm font-medium text-slate-600 dark:text-sage/80 hover:bg-white dark:hover:bg-white/5 transition-all">5.
+                    Inventario y Stock</button>
+                <button (click)="scrollTo('admin')"
+                    class="px-4 py-2 rounded-lg text-left text-sm font-medium text-slate-600 dark:text-sage/80 hover:bg-white dark:hover:bg-white/5 transition-all">6.
+                    Administración</button>
+                <button (click)="scrollTo('reportes')"
+                    class="px-4 py-2 rounded-lg text-left text-sm font-medium text-slate-600 dark:text-sage/80 hover:bg-white dark:hover:bg-white/5 transition-all">7.
+                    Reportes</button>
+            </nav>
+        </aside>
+
+        <!-- Main Content Panels -->
+        <div class="md:col-span-9 space-y-12">
+
+            <!-- Section: Acceso -->
+            <section id="acceso"
+                class="bg-background-light dark:bg-background-dark rounded-3xl border border-slate-200 dark:border-white/5 p-8 shadow-sm">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-xl">login</span>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">1. Acceso al Sistema</h2>
+                </div>
+                <!-- ... Content ... -->
+                <div class="prose dark:prose-invert max-w-none space-y-4">
+                    <p class="text-slate-600 dark:text-sage/80 leading-relaxed">
+                        Para ingresar al sistema, utiliza tus credenciales institucionales. Es fundamental mantener tu
+                        contraseña segura y no compartirla.
+                    </p>
+                    <div
+                        class="bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20 p-4 rounded-2xl flex gap-3">
+                        <span class="material-symbols-outlined text-amber-500">priority_high</span>
+                        <p class="text-sm text-amber-700 dark:text-amber-500/80">
+                            <strong>Importante:</strong> Cada acción realizada queda registrada con tu usuario para
+                            fines de auditoría y seguridad.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: POS -->
+            <section id="pos"
+                class="bg-background-light dark:bg-background-dark rounded-3xl border border-slate-200 dark:border-white/5 p-8 shadow-sm">
+                <div class="flex items-center gap-3 mb-6">
+                    <span
+                        class="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-xl">point_of_sale</span>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">2. Punto de Venta (POS)</h2>
+                </div>
+
+                <div class="space-y-8">
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-white/90">Tomar un Pedido</h3>
+                        <ol class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <li class="bg-slate-50 dark:bg-white/5 p-4 rounded-2xl">
+                                <span class="font-bold text-primary mb-1 block">Paso 1</span>
+                                <p class="text-sm text-slate-600 dark:text-sage/70">Selecciona una mesa disponible
+                                    (color verde) en el mapa de salón.</p>
+                            </li>
+                            <li class="bg-slate-50 dark:bg-white/5 p-4 rounded-2xl">
+                                <span class="font-bold text-primary mb-1 block">Paso 2</span>
+                                <p class="text-sm text-slate-600 dark:text-sage/70">Navega por las categorías y agrega
+                                    los platos solicitados por el cliente.</p>
+                            </li>
+                            <li class="bg-slate-50 dark:bg-white/5 p-4 rounded-2xl">
+                                <span class="font-bold text-primary mb-1 block">Paso 3</span>
+                                <p class="text-sm text-slate-600 dark:text-sage/70">Configura modificadores si es
+                                    necesario (términos de carne, salsas, etc).</p>
+                            </li>
+                            <li class="bg-slate-50 dark:bg-white/5 p-4 rounded-2xl">
+                                <span class="font-bold text-primary mb-1 block">Paso 4</span>
+                                <p class="text-sm text-slate-600 dark:text-sage/70">Pulsa "Enviar a Cocina" para
+                                    procesar la orden inmediatamente.</p>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <div class="p-6 bg-primary/5 rounded-2xl border border-primary/10">
+                        <h3 class="text-lg font-bold text-primary mb-2">Dividir Cuenta</h3>
+                        <p class="text-sm text-slate-600 dark:text-sage/80 mb-4">
+                            ¿Varios clientes en la misma mesa? Usa la opción de **Split Bill** para mover ítems a
+                            cuentas separadas y cobrar a cada uno su consumo exacto.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Cocina -->
+            <section id="cocina"
+                class="bg-background-light dark:bg-background-dark rounded-3xl border border-slate-200 dark:border-white/5 p-8 shadow-sm">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-xl">skillet</span>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">3. Gestión de Cocina</h2>
+                </div>
+                <p class="text-slate-600 dark:text-sage/80 mb-6 leading-relaxed">
+                    Diseñado para el personal de producción. Los pedidos aparecen automáticamente en tiempo real.
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div
+                        class="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-900/20">
+                        <span class="material-symbols-outlined text-blue-500">timer</span>
+                        <div>
+                            <p class="font-bold text-blue-700 dark:text-blue-500/90 text-sm">Control de Tiempo</p>
+                            <p class="text-xs text-blue-600 dark:text-blue-400/70">Observa cuánto tiempo lleva cada
+                                plato en preparación para priorizar pedidos urgentes.</p>
+                        </div>
+                    </div>
+                    <div
+                        class="flex items-start gap-3 p-4 bg-green-50 dark:bg-green-900/10 rounded-2xl border border-green-100 dark:border-green-900/20">
+                        <span class="material-symbols-outlined text-green-500">check_circle</span>
+                        <div>
+                            <p class="font-bold text-green-700 dark:text-green-500/90 text-sm">Estados de Orden</p>
+                            <p class="text-xs text-green-600 dark:text-green-400/70">Marca como "Listo" para notificar
+                                al mesero que el pedido puede ser servido.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Reservas -->
+            <section id="reservas"
+                class="bg-background-light dark:bg-background-dark rounded-3xl border border-slate-200 dark:border-white/5 p-8 shadow-sm">
+                <div class="flex items-center gap-3 mb-6">
+                    <span
+                        class="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-xl">event_available</span>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">4. Reservaciones</h2>
+                </div>
+                <div class="space-y-4">
+                    <p class="text-slate-600 dark:text-sage/80 leading-relaxed">
+                        Administra las visitas futuras de tus clientes con facilidad.
+                    </p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center gap-3 text-sm text-slate-600 dark:text-sage/80">
+                            <span class="material-symbols-outlined text-primary text-[18px]">add</span>
+                            Registra nombre, teléfono, fecha, hora y número de comensales.
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-slate-600 dark:text-sage/80">
+                            <span class="material-symbols-outlined text-primary text-[18px]">table_restaurant</span>
+                            Asigna una mesa específica para asegurar la disponibilidad.
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-slate-600 dark:text-sage/80">
+                            <span class="material-symbols-outlined text-primary text-[18px]">update</span>
+                            Cambia el estado de la reserva (Confirmada, Cancelada, Finalizada).
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Section: Inventario -->
+            <section id="inventario"
+                class="bg-background-light dark:bg-background-dark rounded-3xl border border-slate-200 dark:border-white/5 p-8 shadow-sm">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-xl">inventory</span>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">5. Inventario y Stock</h2>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-bold text-slate-800 dark:text-white/90 mb-2">Escandallos (Recetas)</h4>
+                        <p class="text-sm text-slate-600 dark:text-sage/80">
+                            El sistema descuenta automáticamente los insumos al vender un producto si tienes configurada
+                            su receta correctamente.
+                        </p>
+                    </div>
+                    <div
+                        class="bg-red-50 dark:bg-red-900/10 p-4 rounded-2xl border border-red-100 dark:border-red-900/20">
+                        <h4 class="font-bold text-red-700 dark:text-red-500/90 mb-1">Alertas de Bajo Stock</h4>
+                        <p class="text-xs text-red-600 dark:text-red-400/70">
+                            Recibe notificaciones automáticas cuando tus insumos críticos estén por agotarse.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Administración -->
+            <section id="admin"
+                class="bg-background-light dark:bg-background-dark rounded-3xl border border-slate-200 dark:border-white/5 p-8 shadow-sm">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-xl">settings</span>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">6. Administración</h2>
+                </div>
+                <div class="prose dark:prose-invert max-w-none space-y-6">
+                    <p class="text-slate-600 dark:text-sage/80 leading-relaxed">
+                        Módulos de configuración global del restaurante, accesibles principalmente para Gerentes y
+                        Administradores.
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div
+                            class="p-4 bg-slate-50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/10">
+                            <h4 class="font-bold text-slate-800 dark:text-white/90 mb-2">Productos y Categorías</h4>
+                            <p class="text-sm text-slate-600 dark:text-sage/70">Crea tu menú digital, define precios,
+                                imágenes y organiza todo por categorías lógicas.</p>
+                        </div>
+                        <div
+                            class="p-4 bg-slate-50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/10">
+                            <h4 class="font-bold text-slate-800 dark:text-white/90 mb-2">Personal y Roles</h4>
+                            <p class="text-sm text-slate-600 dark:text-sage/70">Gestiona a tus empleados y asigna
+                                permisos específicos según su función (Mesero, Chef, etc).</p>
+                        </div>
+                        <div
+                            class="p-4 bg-slate-50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/10">
+                            <h4 class="font-bold text-slate-800 dark:text-white/90 mb-2">Configuración de Sucursal</h4>
+                            <p class="text-sm text-slate-600 dark:text-sage/70">Edita los datos que aparecen en tus
+                                tickets: nombre legal, dirección y teléfono.</p>
+                        </div>
+                        <div
+                            class="p-4 bg-slate-50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/10">
+                            <h4 class="font-bold text-slate-800 dark:text-white/90 mb-2">Mesas</h4>
+                            <p class="text-sm text-slate-600 dark:text-sage/70">Define el número de mesas y su
+                                disposición física para el mapa del salón.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Reportes -->
+            <section id="reportes"
+                class="bg-background-light dark:bg-background-dark rounded-3xl border border-slate-200 dark:border-white/5 p-8 shadow-sm">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-xl">analytics</span>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">7. Reportes</h2>
+                </div>
+                <div class="prose dark:prose-invert max-w-none space-y-4">
+                    <p class="text-slate-600 dark:text-sage/80 leading-relaxed">
+                        Analiza la salud de tu negocio con datos precisos generados automáticamente.
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 p-3 bg-indigo-50 dark:bg-indigo-900/10 rounded-xl">
+                            <span class="material-symbols-outlined text-indigo-500">trending_up</span>
+                            <span class="text-sm text-indigo-700 dark:text-indigo-400">Ventas: Ingresos totales y flujo
+                                de caja diario.</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-indigo-50 dark:bg-indigo-900/10 rounded-xl">
+                            <span class="material-symbols-outlined text-indigo-500">restaurant</span>
+                            <span class="text-sm text-indigo-700 dark:text-indigo-400">Productos: Los platos más
+                                rentables y más vendidos.</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-indigo-50 dark:bg-indigo-900/10 rounded-xl">
+                            <span class="material-symbols-outlined text-indigo-500">groups</span>
+                            <span class="text-sm text-indigo-700 dark:text-indigo-400">Personal: Desempeño y ventas por
+                                mesero.</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Final Banner -->
+            <div class="bg-slate-900 dark:bg-primary/20 rounded-3xl p-8 text-center">
+                <h3 class="text-xl font-bold text-white mb-2">¿Necesitas soporte técnico?</h3>
+                <p class="text-slate-400 dark:text-sage/60 text-sm mb-6">
+                    Si encuentras algún error o tienes dudas que no están en este manual, contacta al administrador del
+                    sistema.
+                </p>
+                <button
+                    class="px-6 py-3 bg-primary text-white font-bold rounded-2xl hover:scale-105 transition-transform">
+                    Solicitar Ayuda
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>

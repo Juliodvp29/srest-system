@@ -201,16 +201,39 @@
       }
     </nav>
 
-    @if (hasRole(['admin', 'manager'])) {
     <div class="px-4 pb-4">
       <div class="my-2 border-t border-slate-100 dark:border-white/5 mx-2"></div>
-      <a routerLink="/admin/branch-config" routerLinkActive="bg-primary/10 text-primary"
-        class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-sage/80 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group">
-        <span class="material-symbols-outlined transition-transform group-hover:scale-110">settings</span>
-        <span class="font-medium">Configuración</span>
-      </a>
+
+      <!-- Config Collapsible -->
+      <div class="space-y-1">
+        <button (click)="isConfigOpen.set(!isConfigOpen())"
+          class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-slate-600 dark:text-sage/80 hover:bg-slate-100 dark:hover:bg-white/5 transition-all group">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined transition-transform group-hover:scale-110">settings</span>
+            <span class="font-medium">Configuración</span>
+          </div>
+          <span class="material-symbols-outlined text-[18px] transition-transform duration-300"
+            [class.rotate-180]="isConfigOpen()">
+            expand_more
+          </span>
+        </button>
+
+        @if (isConfigOpen()) {
+        <div class="pl-11 space-y-1 mt-1">
+          @if (hasRole(['admin', 'manager'])) {
+          <a routerLink="/admin/branch-config" routerLinkActive="text-primary font-bold"
+            class="flex items-center py-2 text-sm text-slate-500 hover:text-slate-900 dark:text-sage/60 dark:hover:text-white transition-colors">
+            Sucursal
+          </a>
+          }
+          <a routerLink="/user-manual" routerLinkActive="text-primary font-bold"
+            class="flex items-center py-2 text-sm text-slate-500 hover:text-slate-900 dark:text-sage/60 dark:hover:text-white transition-colors">
+            Manual de Usuario
+          </a>
+        </div>
+        }
+      </div>
     </div>
-    }
 
     <!-- Sidebar Footer (User info) -->
     <div class="p-6 border-t border-slate-100 dark:border-white/5">
@@ -410,16 +433,39 @@
       }
     </nav>
 
-    @if (hasRole(['admin', 'manager'])) {
     <div class="px-4 pb-4">
       <div class="my-2 border-t border-slate-100 dark:border-white/5 mx-2"></div>
-      <a routerLink="/admin/branch-config" routerLinkActive="bg-primary/10 text-primary"
-        class="flex items-center gap-3 px-4 py-3 rounded-xl text-sage">
-        <span class="material-symbols-outlined">settings</span>
-        <span class="font-medium">Configuración</span>
-      </a>
+
+      <!-- Mobile Config Collapsible -->
+      <div class="space-y-1">
+        <button (click)="$event.stopPropagation(); isConfigOpen.set(!isConfigOpen())"
+          class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-sage">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined">settings</span>
+            <span class="font-medium">Configuración</span>
+          </div>
+          <span class="material-symbols-outlined text-[18px] transition-transform duration-300"
+            [class.rotate-180]="isConfigOpen()">
+            expand_more
+          </span>
+        </button>
+
+        @if (isConfigOpen()) {
+        <div class="pl-11 space-y-1 mt-1">
+          @if (hasRole(['admin', 'manager'])) {
+          <a routerLink="/admin/branch-config" routerLinkActive="text-primary font-bold"
+            class="block py-2 text-sm text-sage/70">
+            Sucursal
+          </a>
+          }
+          <a routerLink="/user-manual" routerLinkActive="text-primary font-bold"
+            class="block py-2 text-sm text-sage/70">
+            Manual de Usuario
+          </a>
+        </div>
+        }
+      </div>
     </div>
-    }
 
     <div class="p-6 border-t border-slate-100 dark:border-white/5">
       <button (click)="logout()"
