@@ -64,6 +64,7 @@ export class TablesView implements OnInit, OnDestroy {
   }
 
   setupRealtimeSubscription() {
+    // Listen for changes in the 'tables' table for specific branch
     this.tablesSubscription = this.tablesService.subscribeToTables(
       this.currentBranchId,
       (payload) => {
@@ -82,6 +83,7 @@ export class TablesView implements OnInit, OnDestroy {
   }
 
   async handleTableClick(table: Table) {
+    // Navigate based on table status
     if (table.status === 'available') {
       // Start new order flow
       await this.router.navigate(['/pos/new-order', table.id]);
@@ -119,9 +121,7 @@ export class TablesView implements OnInit, OnDestroy {
   }
 
   generateQR(table: Table) {
-    // In a real app, this would use a library like qrcode.js or similar
-    // For now, we'll construct the URL and show it to the user
-    // The URL structure: [domain]/customer/menu/[table_id]
+    // Construct public menu URL for customer ordering (future feature)
     const baseUrl = window.location.origin;
     const qrUrl = `${baseUrl}/customer/menu/${table.id}`;
 

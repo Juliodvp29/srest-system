@@ -100,7 +100,7 @@ export class Inventory {
       quantity,
       notes,
     });
-    // Stock is updated automatically by database trigger 'trigger_apply_inventory_movement'
+    // Stock is updated by DB trigger 'trigger_apply_inventory_movement'
   }
 
   // Register consumption (manual or external)
@@ -116,7 +116,7 @@ export class Inventory {
       quantity: -quantity, // negative because it's consumed
       notes,
     });
-    // Stock is updated automatically by database trigger 'trigger_apply_inventory_movement'
+    // Stock is updated by DB trigger 'trigger_apply_inventory_movement'
   }
 
   // Register manual adjustment
@@ -131,7 +131,7 @@ export class Inventory {
       quantity,
       notes,
     });
-    // Stock is updated automatically by database trigger 'trigger_apply_inventory_movement'
+    // Stock is updated by DB trigger 'trigger_apply_inventory_movement'
   }
 
   // Register waste
@@ -142,7 +142,7 @@ export class Inventory {
       quantity: -quantity,
       notes,
     });
-    // Stock is updated automatically by database trigger 'trigger_apply_inventory_movement'
+    // Stock is updated by DB trigger 'trigger_apply_inventory_movement'
   }
 
   // Create movement
@@ -155,9 +155,8 @@ export class Inventory {
 
     if (error) throw error;
 
-    // Invalidate inventory cache because stock changed
+    // DB trigger handles stock; invalidate cache to reflect changes
     this.cache.invalidateByPrefix(this.INVENTORY_CACHE_PREFIX);
-
     return data as InventoryMovement;
   }
 
@@ -265,7 +264,7 @@ export class Inventory {
    * when an order_item status is set to 'completed' (or 'delivered').
    */
   async consumeInventoryForProduct(productId: string, quantity: number = 1): Promise<void> {
-    // This is now handled by DB trigger on order_items update
+    // Handled by DB trigger 'consume_inventory' on order_items update
     console.log(`Inventory for product ${productId} is handled automatically by DB triggers.`);
   }
 

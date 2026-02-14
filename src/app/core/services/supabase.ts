@@ -30,7 +30,7 @@ export class Supabase {
         const user = data.session?.user ?? null;
         this._currentUser.set(user);
         if (user) {
-          // Run in next tick to avoid blocking the auth promise resolution
+          // Fetch user details immediately after session recovery
           setTimeout(() => this.fetchUserProfile(user.id), 0);
         }
       })
@@ -66,7 +66,7 @@ export class Supabase {
 
   async withLoading<T>(fn: () => PromiseLike<T>): Promise<T> {
     try {
-      this.loading.show();
+      this.loading.show(); // Trigger global UI loader
       return await fn();
     } finally {
       this.loading.hide();

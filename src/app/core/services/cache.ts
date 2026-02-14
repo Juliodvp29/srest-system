@@ -13,9 +13,7 @@ export class CacheService {
     private cache = new Map<string, CacheEntry<any>>();
     private DEFAULT_TTL = 300000; // 5 minutes
 
-    /**
-     * Set a value in the cache
-     */
+    // Set a value with optional Time To Live (TTL)
     set(key: string, data: any, ttl: number = this.DEFAULT_TTL): void {
         this.cache.set(key, {
             data,
@@ -23,9 +21,7 @@ export class CacheService {
         });
     }
 
-    /**
-     * Get a value from the cache
-     */
+    // Retrieve value if not expired
     get<T>(key: string): T | null {
         const entry = this.cache.get(key);
         if (!entry) return null;
@@ -38,9 +34,7 @@ export class CacheService {
         return entry.data as T;
     }
 
-    /**
-     * Observable-based caching wrapper
-     */
+    // RxJS caching wrapper
     cacheObservable<T>(key: string, observer: Observable<T>, ttl?: number): Observable<T> {
         const cached = this.get<T>(key);
         if (cached) {
@@ -52,9 +46,7 @@ export class CacheService {
         );
     }
 
-    /**
-     * Promise-based caching wrapper
-     */
+    // Promise caching wrapper
     async cachePromise<T>(key: string, promiseFn: () => Promise<T>, ttl?: number): Promise<T> {
         const cached = this.get<T>(key);
         if (cached) {
@@ -66,16 +58,12 @@ export class CacheService {
         return data;
     }
 
-    /**
-     * Invalidate a specific key
-     */
+    // Invalidate specific key
     invalidate(key: string): void {
         this.cache.delete(key);
     }
 
-    /**
-     * Invalidate keys starting with a prefix
-     */
+    // Clear all keys matching prefix
     invalidateByPrefix(prefix: string): void {
         for (const key of this.cache.keys()) {
             if (key.startsWith(prefix)) {

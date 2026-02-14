@@ -109,7 +109,7 @@ export class Products {
     );
   }
 
-  // Delete product (soft delete)
+  // Soft delete and cleanup images
   deleteProduct(id: string): Observable<void> {
     return from(
       this.supabase.withLoading(() => this.supabase.client.from('products').update({ is_active: false }).eq('id', id)),
@@ -132,7 +132,7 @@ export class Products {
     );
   }
 
-  // Get all categories
+  // Get categories with auto-caching
   getAllCategories(): Observable<Category[]> {
     return this.cache.cacheObservable(
       this.CATEGORIES_CACHE_KEY,
@@ -175,7 +175,7 @@ export class Products {
     );
   }
 
-  // Delete category (soft delete)
+  // Soft delete category and invalidate cache
   deleteCategory(id: string): Observable<void> {
     return from(
       this.supabase.client.from('categories').update({ is_active: false }).eq('id', id),

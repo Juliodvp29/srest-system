@@ -36,11 +36,11 @@ export class OrdersBoard implements OnDestroy {
       }
     });
 
-    // Polling fallback every 15 seconds
+    // Every 15s refresh as a fallback for WebSocket drops
     this.pollingInterval = setInterval(() => this.refresh(), 15000);
   }
 
-  // Load active orders via signal
+  // Fetch active orders; reactive to branchId and refresh trigger
   orders = toSignal(
     toObservable(computed(() => ({ bid: this.branchId(), t: this.refreshTrigger() }))).pipe(
       switchMap(({ bid }) => {
@@ -51,7 +51,7 @@ export class OrdersBoard implements OnDestroy {
     { initialValue: [] as KitchenOrder[] },
   );
 
-  // Kanban columns
+  // Derive Kanban columns from master order list
   pendingOrders = computed(() => this.orders().filter((o) => o.status === 'pending'));
   preparingOrders = computed(() => this.orders().filter((o) => o.status === 'preparing'));
   readyOrders = computed(() => this.orders().filter((o) => o.status === 'ready'));
