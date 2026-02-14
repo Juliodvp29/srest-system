@@ -45,7 +45,7 @@ export class OrdersBoard implements OnDestroy {
     toObservable(computed(() => ({ bid: this.branchId(), t: this.refreshTrigger() }))).pipe(
       switchMap(({ bid }) => {
         if (!bid) return from(Promise.resolve([] as KitchenOrder[]));
-        return from(this.ordersService.getActiveOrders(bid) as Promise<KitchenOrder[]>);
+        return from(this.ordersService.getActiveOrders(bid, true) as Promise<KitchenOrder[]>);
       }),
     ),
     { initialValue: [] as KitchenOrder[] },

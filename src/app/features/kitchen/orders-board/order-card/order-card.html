@@ -32,7 +32,8 @@
                 </div>
             </div>
         </div>
-        <app-timer-display [createdAt]="order().created_at" />
+        <app-timer-display [createdAt]="order().created_at"
+            [stoppedAt]="(order().status === 'ready' || order().status === 'delivered') ? order().updated_at : null" />
     </div>
 
     <!-- Items -->

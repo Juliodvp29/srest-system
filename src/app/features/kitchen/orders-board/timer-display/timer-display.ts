@@ -8,6 +8,7 @@ import { Component, computed, DestroyRef, inject, input, OnInit, signal } from '
 })
 export class TimerDisplay implements OnInit {
   createdAt = input.required<string>();
+  stoppedAt = input<string | null | undefined>();
 
   private destroyRef = inject(DestroyRef);
   private intervalId: any;
@@ -45,7 +46,10 @@ export class TimerDisplay implements OnInit {
 
   ngOnInit() {
     this.updateElapsed();
-    this.intervalId = setInterval(() => this.updateElapsed(), 1000);
+
+    if (!this.stoppedAt()) {
+      this.intervalId = setInterval(() => this.updateElapsed(), 1000);
+    }
 
     this.destroyRef.onDestroy(() => {
       if (this.intervalId) clearInterval(this.intervalId);
@@ -54,7 +58,7 @@ export class TimerDisplay implements OnInit {
 
   private updateElapsed() {
     const created = new Date(this.createdAt()).getTime();
-    const now = Date.now();
+    const now = this.stoppedAt() ? new Date(this.stoppedAt()!).getTime() : Date.now();
     this.elapsedSeconds.set(Math.max(0, Math.floor((now - created) / 1000)));
   }
 }

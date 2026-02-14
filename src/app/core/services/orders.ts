@@ -10,7 +10,7 @@ export class Orders {
   constructor() { }
 
   // Get active orders for a branch
-  async getActiveOrders(branchId: string): Promise<Order[]> {
+  async getActiveOrders(branchId: string, skipLoading: boolean = false): Promise<Order[]> {
     const { data, error } = await this.supabase.withLoading(() => this.supabase.client
       .from('orders')
       .select(
@@ -22,7 +22,7 @@ export class Orders {
       )
       .eq('branch_id', branchId)
       .in('status', ['pending', 'preparing', 'ready'])
-      .order('created_at', { ascending: false }));
+      .order('created_at', { ascending: false }), { skipLoading });
 
     if (error) throw error;
     return data as any[];

@@ -28,7 +28,6 @@ export class ActiveOrders implements OnDestroy {
 
   private branchId = computed(() => this.supabase.userProfile()?.branch_id || '');
   private subscription?: any;
-  private pollingInterval?: any;
 
   refreshTrigger = signal(0);
 
@@ -41,13 +40,6 @@ export class ActiveOrders implements OnDestroy {
         this.setupRealtimeSync(bid);
       }
     });
-
-    // 2. Polling Fallback (Every 15 seconds)
-    // This ensures updates even if Realtime replication is disabled in Supabase
-    this.pollingInterval = setInterval(() => {
-      console.log('[ActiveOrders] 15s Polling refresh...');
-      this.refresh();
-    }, 15000);
   }
 
   orders = toSignal(
@@ -55,7 +47,7 @@ export class ActiveOrders implements OnDestroy {
       switchMap(({ bid }) => {
         if (!bid) return from(Promise.resolve([] as DashboardOrder[]));
         console.log('[ActiveOrders] Fetching active orders for branch:', bid);
-        return from(this.ordersService.getActiveOrders(bid) as Promise<DashboardOrder[]>);
+        return from(this.ordersService.getActiveOrders(bid, true) as Promise<DashboardOrder[]>);
       }),
     ),
     { initialValue: [] as DashboardOrder[] },
@@ -75,9 +67,6 @@ export class ActiveOrders implements OnDestroy {
 
   ngOnDestroy() {
     this.cleanupSubscription();
-    if (this.pollingInterval) {
-      clearInterval(this.pollingInterval);
-    }
   }
 
   private cleanupSubscription() {

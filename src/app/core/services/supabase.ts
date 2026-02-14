@@ -64,7 +64,11 @@ export class Supabase {
   // Helper to run any async Supabase operation while toggling global loading
   private loading = inject(Loading);
 
-  async withLoading<T>(fn: () => PromiseLike<T>): Promise<T> {
+  async withLoading<T>(fn: () => PromiseLike<T>, options: { skipLoading?: boolean } = {}): Promise<T> {
+    if (options.skipLoading) {
+      return await fn();
+    }
+
     try {
       this.loading.show(); // Trigger global UI loader
       return await fn();
