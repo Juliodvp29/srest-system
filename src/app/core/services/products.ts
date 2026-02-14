@@ -3,6 +3,7 @@ import { Category, Product } from '@core/models/database.types';
 import { Supabase } from '@services/supabase';
 import { from, map, Observable, tap } from 'rxjs';
 import { Storages } from './storages';
+import { CacheService } from './cache';
 
 @Injectable({
   providedIn: 'root',
@@ -10,8 +11,11 @@ import { Storages } from './storages';
 export class Products {
   private supabase = inject(Supabase);
   private storages = inject(Storages);
+  private cache = inject(CacheService);
 
-  constructor() {}
+  private readonly CATEGORIES_CACHE_KEY = 'categories_all';
+
+  constructor() { }
 
   // Get all products with category name
   getAllProducts(): Observable<any[]> {
@@ -130,23 +134,27 @@ export class Products {
 
   // Get all categories
   getAllCategories(): Observable<Category[]> {
-    return from(
-      this.supabase.withLoading(() => this.supabase.client
-        .from('categories')
-        .select('*')
-        .eq('is_active', true)
-        .order('display_order')),
-    ).pipe(
-      map(({ data, error }) => {
-        if (error) throw error;
-        return data as Category[];
-      }),
+    return this.cache.cacheObservable(
+      this.CATEGORIES_CACHE_KEY,
+      from(
+        this.supabase.withLoading(() => this.supabase.client
+          .from('categories')
+          .select('*')
+          .eq('is_active', true)
+          .order('display_order'))
+      ).pipe(
+        map(({ data, error }) => {
+          if (error) throw error;
+          return data as Category[];
+        })
+      )
     );
   }
 
   // Create category
   createCategory(category: Partial<Category>): Observable<Category> {
     return from(this.supabase.client.from('categories').insert(category).select().single()).pipe(
+      tap(() => this.cache.invalidate(this.CATEGORIES_CACHE_KEY)),
       map(({ data, error }) => {
         if (error) throw error;
         return data as Category;
@@ -159,6 +167,7 @@ export class Products {
     return from(
       this.supabase.client.from('categories').update(updates).eq('id', id).select().single(),
     ).pipe(
+      tap(() => this.cache.invalidate(this.CATEGORIES_CACHE_KEY)),
       map(({ data, error }) => {
         if (error) throw error;
         return data as Category;
@@ -171,6 +180,7 @@ export class Products {
     return from(
       this.supabase.client.from('categories').update({ is_active: false }).eq('id', id),
     ).pipe(
+      tap(() => this.cache.invalidate(this.CATEGORIES_CACHE_KEY)),
       map(({ error }) => {
         if (error) throw error;
       }),

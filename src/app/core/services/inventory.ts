@@ -1,24 +1,33 @@
 import { inject, Injectable } from '@angular/core';
 import { InventoryItem, InventoryMovement, Recipe } from '@app/core/models/Inventory';
 import { Supabase } from './supabase';
+import { CacheService } from './cache';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Inventory {
   private supabase = inject(Supabase);
+  private cache = inject(CacheService);
+
+  private readonly INVENTORY_CACHE_PREFIX = 'inventory_items_';
+
   constructor() { }
 
   // Get all items
   async getAllInventoryItems(branchId: string): Promise<InventoryItem[]> {
-    const { data, error } = await this.supabase.client
-      .from('inventory_items')
-      .select('*')
-      .eq('branch_id', branchId)
-      .order('name');
+    const cacheKey = `${this.INVENTORY_CACHE_PREFIX}${branchId}`;
 
-    if (error) throw error;
-    return data as InventoryItem[];
+    return this.cache.cachePromise(cacheKey, async () => {
+      const { data, error } = await this.supabase.client
+        .from('inventory_items')
+        .select('*')
+        .eq('branch_id', branchId)
+        .order('name');
+
+      if (error) throw error;
+      return data as InventoryItem[];
+    });
   }
 
   // Get items with low stock
@@ -44,6 +53,11 @@ export class Inventory {
       .single();
 
     if (error) throw error;
+
+    if (data.branch_id) {
+      this.cache.invalidate(`${this.INVENTORY_CACHE_PREFIX}${data.branch_id}`);
+    }
+
     return data as InventoryItem;
   }
 
@@ -57,14 +71,24 @@ export class Inventory {
       .single();
 
     if (error) throw error;
+
+    if (data.branch_id) {
+      this.cache.invalidate(`${this.INVENTORY_CACHE_PREFIX}${data.branch_id}`);
+    }
+
     return data as InventoryItem;
   }
 
   // Delete inventory item
   async deleteInventoryItem(id: string): Promise<void> {
+    // We need the branch_id to invalidate cache, so we fetch it first or use a prefix invalidation
+    // To be safe and simple, we can invalidate all inventory caches or just the specific one if we had the branchId
+    // Since this is less frequent, let's invalidate by prefix
     const { error } = await this.supabase.client.from('inventory_items').delete().eq('id', id);
 
     if (error) throw error;
+
+    this.cache.invalidateByPrefix(this.INVENTORY_CACHE_PREFIX);
   }
 
   // Register purchase
@@ -130,6 +154,10 @@ export class Inventory {
       .single();
 
     if (error) throw error;
+
+    // Invalidate inventory cache because stock changed
+    this.cache.invalidateByPrefix(this.INVENTORY_CACHE_PREFIX);
+
     return data as InventoryMovement;
   }
 
