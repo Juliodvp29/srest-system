@@ -43,6 +43,26 @@ body {
   @apply bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400 font-bold px-3 py-1 rounded-lg text-[10px] uppercase tracking-wider;
 }
 
+/* Touch screen optimizations */
+* {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.active-scale {
+  @apply active:scale-95 transition-transform duration-75;
+}
+
 /* Standardized Scrollbars */
 .custom-scrollbar::-webkit-scrollbar {
   width: 5px;

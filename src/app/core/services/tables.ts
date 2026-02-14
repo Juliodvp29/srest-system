@@ -102,17 +102,19 @@ export class Tables {
 
   // Occupy table (when an order is created)
   async occupyTable(tableId: string): Promise<void> {
+    // Explicitly set occupied, then check if it should be something else (though orders win)
     await this.updateTableStatus(tableId, 'occupied');
   }
 
   // Release table (when payment is made and order is closed)
   async releaseTable(tableId: string): Promise<void> {
-    await this.updateTableStatus(tableId, 'available');
+    // Instead of just setting available, do a full check to see if it should be 'reserved'
+    await this.checkAndUpdateTableStatus(tableId);
   }
 
   // Check and update table status based on active orders and today's reservations
   async checkAndUpdateTableStatus(tableId: string): Promise<void> {
-    // 1. Check for active orders (highest priority)
+    // 1. Check for active orders (highest priority: 'occupied')
     const { count: orderCount, error: orderError } = await this.supabase.client
       .from('orders')
       .select('*', { count: 'exact', head: true })
@@ -126,10 +128,11 @@ export class Tables {
       return;
     }
 
-    // 2. Check for reservations TODAY
-    const today = new Date().toLocaleDateString('en-CA');
-    const start = new Date(`${today}T00:00:00`).toISOString();
-    const end = new Date(`${today}T23:59:59.999`).toISOString();
+    // 2. Check for reservations TODAY (booked or confirmed only)
+    // Use a more robust date range (local start to local end of today)
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+    const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999).toISOString();
 
     const { count: resCount, error: resError } = await this.supabase.client
       .from('reservations')
@@ -141,10 +144,15 @@ export class Tables {
 
     if (resError) throw resError;
 
+    // If no active orders, determine if it's reserved or available
     if (resCount && resCount > 0) {
       await this.updateTableStatus(tableId, 'reserved');
     } else {
-      await this.updateTableStatus(tableId, 'available');
+      // Return to available only if it was occupied/reserved (preserve 'cleaning' if manually set)
+      const currentTable = await this.getTableById(tableId);
+      if (currentTable.status === 'occupied' || currentTable.status === 'reserved') {
+        await this.updateTableStatus(tableId, 'available');
+      }
     }
   }
 
